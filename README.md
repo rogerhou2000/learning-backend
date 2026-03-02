@@ -30,7 +30,7 @@
 ---
 
 ### Git 開發流程（請務必遵守）
-一定要在自己的 branch 上操作
+一定要在自己的 branch 上操作<br>
 0. `git branch` 如果看到 `* main` 請停下動作，先按以下步驟建立 / 切換到 自己的分支
 > 如何建立自己的分支? 
 > 1. `git checkout main` 確保你拉到 main 而不是其他
@@ -42,20 +42,20 @@
 
 > **💡 如果有不推送的檔案不小心 add 了怎麼辦？**
 > 1. `git status` 查看狀態
-> 2. 畫面會提示 `use "git restore --staged <file>..." to unstage`，底下會列出所有 add 的檔案。
-> 3. 複製你不打算推送的檔案名稱。
-> 4. 輸入 `git restore --staged <你不想推送的檔案>` 將其移出暫存區。
+> 2. 畫面會提示 `use "git restore --staged <file>..." to unstage`，底下會列出所有 add 的檔案
+> 3. 複製你不打算推送的檔案名稱
+> 4. 輸入 `git restore --staged <你不想推送的檔案>` 將其移出暫存區
 
-3. `git status`：再確認一次狀態，確保準備提交的檔案都正確。
-4. `git commit -m "<Type>: <Description>"`：提交變更，Commit 訊息請參考下方規則。
-5. `git push origin 分支名稱`：推送到遠端儲存庫。
+3. `git status`：再確認一次狀態，確保準備提交的檔案都正確
+4. `git commit -m "<Type>: <Description>"`：提交變更，Commit 訊息請參考下方規則
+5. `git push origin 分支名稱`：推送到遠端儲存庫
 
 ---
 
 ### Git Commit Message Rules
 
 1. **原子化提交 (Atomic Commits)**           <br>
-   假設你今天同時修復了 Bug (fix) 又新增了功能 (feat)，請分開成兩次提交。
+   假設你今天同時修復了 Bug (fix) 又新增了功能 (feat)，請分開成兩次提交
 
 2. **常用類型標籤 (Type Tags)**
     * `feat`: 新增功能
@@ -81,5 +81,3 @@
 4. **作業系統產生的系統檔**
     * Mac 產生的 `.DS_Store`
     * Windows 產生的 `Thumbs.db`
-
-### Branch 命名規則
