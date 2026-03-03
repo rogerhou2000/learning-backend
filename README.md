@@ -1,12 +1,12 @@
 # Learning Backend – 開發說明文件
 
-### 後端 (Backend)
+### 後端 ( Backend )
 * **語言:** Java
 * **框架:** Spring Boot
 * **資料庫存取:** Spring Data JPA
 * **開發工具:** IntelliJ IDEA
 
-### 前端 (Frontend)
+### 前端 ( Frontend )
 * **建置工具:** Vite
 * **樣式:** SCSS, Bootstrap
 * **HTTP 客戶端:** Axios
@@ -29,7 +29,7 @@
 
 ---
 
-### Git 開發流程（請務必遵守）
+### Git 開發流程（ 請務必遵守 ）
 一定要在自己的 branch 上操作<br>
 0. `git branch` 如果看到 `* main` 請停下動作，先按以下步驟建立 / 切換到 自己的分支
 > 如何建立自己的分支? 
@@ -54,20 +54,25 @@
 
 ### Git Commit Message Rules
 
-1. **原子化提交 (Atomic Commits)**           <br>
-   假設你今天同時修復了 Bug (fix) 又新增了功能 (feat)，請分開成兩次提交
+1. **原子化提交 ( Atomic Commits )**           <br>
+   假設你今天同時修復了 Bug ( fix ) 又新增了功能 ( feat )，請分開成兩次提交
 
-2. **常用類型標籤 (Type Tags)**
+2. **常用類型標籤 ( Type Tags )**
     * `feat`: 新增功能
     * `fix`: 修復 Bug
     * `docs`: 文件更動 ( 如修改 README )
     * `refactor`: 重構程式碼 ( 不影響原本功能的優化 )
     * `chore`: 雜項、套件或環境設定更動 ( 如修改 pom.xml 或 vite.config.js )
+    * `revert`: 回滾
 
+
+> Commit 總結 : <br>
+只能有相關的 commit <br>
+每個 commit 不要更動太多檔案，會難以閱讀
 ---
 
 ### 不該推送的檔案與 .gitignore 規範
-為了保持儲存庫乾淨並保護敏感資訊，以下檔案 **絕對不要** 用 `git add` 推送上去（請務必確保它們已寫入 `.gitignore` 檔案中）：
+為了保持儲存庫乾淨並保護敏感資訊，以下檔案 **絕對不要** 推送上去（ 請務必確保它們已寫入 `.gitignore` 檔案中 ）：
 
 1. **敏感設定與密碼**
     * 包含真實資料庫帳密的 `application.properties`
@@ -81,3 +86,51 @@
 4. **作業系統產生的系統檔**
     * Mac 產生的 `.DS_Store`
     * Windows 產生的 `Thumbs.db`
+   
+以下為 後端開發 .gitignore 範本
+````
+# =========================
+# Backend (Java / Spring Boot)
+# =========================
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+
+# 敏感設定檔
+application.properties
+
+# =========================
+# IDE & Editors
+# =========================
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# =========================
+# OS Files
+# =========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+````
+
+
