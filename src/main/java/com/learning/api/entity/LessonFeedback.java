@@ -1,10 +1,13 @@
 package com.learning.api.entity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "lesson_feedback")
-@Data
+@Getter
+@Setter
 public class LessonFeedback {
 
     @Id

@@ -2,10 +2,13 @@ package com.learning.api.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "tutor_schedules")
-@Data
+@Getter
+@Setter
 public class TutorSchedule {
 
     @Id
