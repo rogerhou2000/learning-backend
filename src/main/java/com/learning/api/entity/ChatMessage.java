@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "chat_messages")
 @Data
-public class ChatMessages {
+public class ChatMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

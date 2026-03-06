@@ -5,7 +5,7 @@ import lombok.Data;
 @Entity
 @Table(name = "bookings")
 @Data
-public class Bookings {
+public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
