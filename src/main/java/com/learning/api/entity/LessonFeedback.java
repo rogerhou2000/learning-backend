@@ -14,8 +14,9 @@ public class LessonFeedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "lesson_id", nullable = false)
-    private Long lessonId;
+    @OneToOne
+    @JoinColumn(name = "lesson_id")
+    private Lesson lesson;
 
     @Column(nullable = false)
     private Byte rating;
@@ -23,7 +24,5 @@ public class LessonFeedback {
     @Column(nullable = true, length = 1000)
     private String comment;
     
-    @OneToOne
-    @JoinColumn(name = "lesson_id")
-    private Lesson lesson;
+
 }
