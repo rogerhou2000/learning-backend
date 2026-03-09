@@ -14,7 +14,7 @@ public class LessonFeedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "lesson_id", nullable = false)
+    @Column(name = "lesson_id", insertable = false, updatable = false)
     private Long lessonId;
 
     @Column(nullable = false)
