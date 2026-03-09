@@ -23,11 +23,7 @@ public class LessonFeedback {
     @Column(nullable = true, length = 1000)
     private String comment;
     
-<<<<<<< HEAD
-
-=======
 //    @OneToOne
 //    @JoinColumn(name = "lesson_id")
 //    private Lesson lesson;
->>>>>>> 7354f396dc9c7a39fe91fe05968dd303e0bd21c9
 }
