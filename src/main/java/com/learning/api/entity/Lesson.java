@@ -31,6 +31,9 @@ public class Lesson {
     @Column(nullable = false)
     private Byte hour;
 
+    @Column(name = "slot_locked")
+    private Byte slotLocked;
+
     @Column(nullable = false)
     private Byte status;
 

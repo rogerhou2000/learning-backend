@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-import com.learning.api.entity.Booking;
+import com.learning.api.entity.Order;
 import com.learning.api.entity.ChatMessage;
 import com.learning.api.repo.BookingRepository;
 import com.learning.api.repo.ChatMessageRepository;
@@ -46,7 +46,7 @@ class ChatMessageControllerTest {
     private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
-    private Booking testBooking;
+    private Order testBooking;
     private ChatMessage savedMessage;
 
     @BeforeEach
@@ -75,7 +75,7 @@ class ChatMessageControllerTest {
         testCourse.setActive(true);
         testCourse = courseRepository.save(testCourse);
 
-        testBooking = new Booking();
+        testBooking = new Order();
         testBooking.setUserId(testUser.getId());
         testBooking.setCourseId(testCourse.getId());
         testBooking.setUnitPrice(100);
