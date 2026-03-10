@@ -1,4 +1,6 @@
 package com.learning.api.entity;
+import java.sql.Timestamp;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -17,11 +19,20 @@ public class LessonFeedback {
     @JoinColumn(name = "booking_id")
     private Long bookId;
 
-    @Column(nullable = false)
-    private Byte rating;
+    @Column(name="focus_score" ,nullable = false)
+    private Integer focusScore;
+
+    @Column(name="comprehension_score" ,nullable = false)
+    private Integer comprehensionScore;
+
+    @Column(name="confidence_score" ,nullable = false)
+    private Integer confidenceScore;
 
     @Column(nullable = true, length = 1000)
-    private String comment;
+    private String comment; 
+
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private Timestamp createdAt;
     
 
 }
