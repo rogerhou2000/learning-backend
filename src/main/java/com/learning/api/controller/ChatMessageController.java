@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/chat-messages")
+@RequestMapping("/api/chatMessage")
 @RequiredArgsConstructor
 public class ChatMessageController {
 

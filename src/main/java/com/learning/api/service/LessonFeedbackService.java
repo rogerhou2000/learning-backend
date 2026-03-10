@@ -25,12 +25,12 @@ public class LessonFeedbackService {
         return lessonFeedbackRepository.findById(id);
     }
 
-    public List<LessonFeedback> findByLessonId(Long lessonId) {
-        return lessonFeedbackRepository.findByLessonId(lessonId);
+    public List<LessonFeedback> findByBookingId(Long bookingId) {
+        return lessonFeedbackRepository.findByBookingId(bookingId);
     }
 
-    public Double getAverageRating(Long lessonId) {
-        Double average = lessonFeedbackRepository.findAverageRatingByLessonId(lessonId);
+    public Double getAverageRating(Long bookingId) {
+        Double average = lessonFeedbackRepository.findAverageRatingByBookingId(bookingId);
         return average != null ? average : 0.0;
     }
 

@@ -15,7 +15,7 @@ public class ChatMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "booking_id", nullable = false)
+    @Column(name = "order_id", nullable = false)
     private Long bookingId;
 
     @Column(nullable = false)

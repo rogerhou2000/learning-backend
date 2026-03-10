@@ -45,7 +45,7 @@ public class LessonFeedbackControllerTest {
         lessonFeedbackRepository.deleteAllInBatch();
 
         LessonFeedback feedback = new LessonFeedback();
-        feedback.setLessonId(1L);
+        feedback.setBookingId(1L);
         feedback.setRating((byte) 4);
         feedback.setComment("Initial feedback");
         savedFeedback = lessonFeedbackRepository.save(feedback);
@@ -95,7 +95,7 @@ public class LessonFeedbackControllerTest {
     void getAverageRating_noFeedbacks_shouldReturnZero() throws Exception {
         mockMvc.perform(get("/api/lesson-feedbacks/lesson/{lessonId}/average-rating", 999999L))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lessonId").value(999999))
+                .andExpect(jsonPath("$.bookingId").value(999999))
                 .andExpect(jsonPath("$.averageRating").value(0.0));
     }
 
@@ -104,7 +104,7 @@ public class LessonFeedbackControllerTest {
     @Test
     void post_validRequest_shouldReturn201() throws Exception {
         Map<String, Object> body = Map.of(
-                "lessonId", 1,
+                "bookingId", 1,
                 "rating", 5,
                 "comment", "Great lesson"
         );
@@ -134,7 +134,7 @@ public class LessonFeedbackControllerTest {
     @Test
     void post_missingRating_shouldReturn400() throws Exception {
         Map<String, Object> body = Map.of(
-                "lessonId", 1,
+                "bookingId", 1,
                 "comment", "Good lesson"
         );
 
@@ -147,7 +147,7 @@ public class LessonFeedbackControllerTest {
     @Test
     void post_ratingBelowMin_shouldReturn400() throws Exception {
         Map<String, Object> body = Map.of(
-                "lessonId", 1,
+                "bookingId", 1,
                 "rating", 0,
                 "comment", "Bad rating"
         );
@@ -161,7 +161,7 @@ public class LessonFeedbackControllerTest {
     @Test
     void post_ratingAboveMax_shouldReturn400() throws Exception {
         Map<String, Object> body = Map.of(
-                "lessonId", 1,
+                "bookingId", 1,
                 "rating", 6,
                 "comment", "Over max rating"
         );

@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class LessonFeedbackRequest {
-    private Long lessonId;
+    private Long bookingId;
     private Byte rating;
     private String comment;
 }

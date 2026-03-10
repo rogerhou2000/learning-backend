@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.sql.Date;
 
 @Entity
-@Table(name = "lessons")
+@Table(name = "bookings")
 @Getter
 @Setter
 public class Lesson {
@@ -16,7 +16,7 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "booking_id", nullable = false)
+    @Column(name = "order_id", nullable = false)
     private Long bookingId;
 
     @Column(name = "tutor_id", nullable = false)

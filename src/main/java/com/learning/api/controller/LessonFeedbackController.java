@@ -30,16 +30,16 @@ public class LessonFeedbackController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/lesson/{lessonId}")
-    public List<LessonFeedback> getByLessonId(@PathVariable Long lessonId) {
-        return lessonFeedbackService.findByLessonId(lessonId);
+    @GetMapping("/lesson/{bookingId}")
+    public List<LessonFeedback> getByBookingId(@PathVariable Long bookingId) {
+        return lessonFeedbackService.findByBookingId(bookingId);
     }
 
-    @GetMapping("/lesson/{lessonId}/average-rating")
-    public ResponseEntity<Map<String, Object>> getAverageRating(@PathVariable Long lessonId) {
-        Double avg = lessonFeedbackService.getAverageRating(lessonId);
+    @GetMapping("/lesson/{bookingId}/average-rating")
+    public ResponseEntity<Map<String, Object>> getAverageRating(@PathVariable Long bookingId) {
+        Double avg = lessonFeedbackService.getAverageRating(bookingId);
         return ResponseEntity.ok(Map.of(
-                "lessonId", lessonId,
+                "bookingId", bookingId,
                 "averageRating", avg != null ? avg : 0.0
         ));
     }
@@ -47,9 +47,9 @@ public class LessonFeedbackController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody LessonFeedbackRequest request) {
         try {
-            if (request.getLessonId() == null) {
+            if (request.getBookingId() == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorResponse("驗證失敗: lessonId 不能為空"));
+                        .body(new ErrorResponse("驗證失敗: bookingId 不能為空"));
             }
             if (request.getRating() == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -57,7 +57,7 @@ public class LessonFeedbackController {
             }
 
             LessonFeedback feedback = new LessonFeedback();
-            feedback.setLessonId(request.getLessonId());
+            feedback.setBookingId(request.getBookingId());
             feedback.setRating(request.getRating());
             feedback.setComment(request.getComment());
 

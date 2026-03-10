@@ -56,7 +56,7 @@ class ChatMessageControllerTest {
         }
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
-        // create a user so fk_courses_tutor constraint is satisfied
+
         com.learning.api.entity.User testUser = new com.learning.api.entity.User();
         testUser.setName("Test Tutor");
         testUser.setEmail("testtutor@example.com");
@@ -64,7 +64,7 @@ class ChatMessageControllerTest {
         testUser.setRole(2);
         testUser = userRepository.save(testUser);
 
-        // create a course so fk_bookings_course constraint is satisfied
+
         com.learning.api.entity.Course testCourse = new com.learning.api.entity.Course();
         testCourse.setTutorId(testUser.getId());
         testCourse.setName("Test Course");
@@ -76,9 +76,10 @@ class ChatMessageControllerTest {
         testCourse = courseRepository.save(testCourse);
 
         testBooking = new Booking();
-        testBooking.setUserId(1L);
+        testBooking.setUserId(testUser.getId());
         testBooking.setCourseId(testCourse.getId());
         testBooking.setUnitPrice(100);
+        testBooking.setDiscountPrice(100);
         testBooking.setLessonCount(1);
         testBooking.setLessonused(0);
         testBooking.setStatus((byte)1);
@@ -95,7 +96,7 @@ class ChatMessageControllerTest {
 
     @Test
     void getByBookingId_existingBooking_shouldReturnMessages() throws Exception {
-        mockMvc.perform(get("/api/chat-messages/booking/{bookingId}", testBooking.getId()))
+        mockMvc.perform(get("/api/chatMessage/booking/{bookingId}", testBooking.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
                 .andExpect(jsonPath("$[0].bookingId").value(testBooking.getId()))
@@ -107,7 +108,7 @@ class ChatMessageControllerTest {
     void getByBookingId_noMessages_shouldReturnEmptyList() throws Exception {
         chatMessageRepository.deleteAllInBatch();
 
-        mockMvc.perform(get("/api/chat-messages/booking/{bookingId}", testBooking.getId()))
+        mockMvc.perform(get("/api/chatMessage/booking/{bookingId}", testBooking.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
@@ -120,7 +121,7 @@ class ChatMessageControllerTest {
         msg2.setMessage("Second message");
         chatMessageRepository.save(msg2);
 
-        mockMvc.perform(get("/api/chat-messages/booking/{bookingId}", testBooking.getId()))
+        mockMvc.perform(get("/api/chatMessage/booking/{bookingId}", testBooking.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].message").value("Initial message"))
@@ -137,7 +138,7 @@ class ChatMessageControllerTest {
                 "message", "Hello tutor"
         );
 
-        mockMvc.perform(post("/api/chat-messages")
+        mockMvc.perform(post("/api/chatMessage")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isCreated())
@@ -155,7 +156,7 @@ class ChatMessageControllerTest {
                 "message", "Hello student"
         );
 
-        mockMvc.perform(post("/api/chat-messages")
+        mockMvc.perform(post("/api/chatMessage")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isCreated())
@@ -170,7 +171,7 @@ class ChatMessageControllerTest {
                 "message", "Hello"
         );
 
-        mockMvc.perform(post("/api/chat-messages")
+        mockMvc.perform(post("/api/chatMessage")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
@@ -184,7 +185,7 @@ class ChatMessageControllerTest {
                 "message", "Hello"
         );
 
-        mockMvc.perform(post("/api/chat-messages")
+        mockMvc.perform(post("/api/chatMessage")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
@@ -199,7 +200,7 @@ class ChatMessageControllerTest {
                 "message", "   "
         );
 
-        mockMvc.perform(post("/api/chat-messages")
+        mockMvc.perform(post("/api/chatMessage")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
@@ -214,7 +215,7 @@ class ChatMessageControllerTest {
                 "message", "Hello"
         );
 
-        mockMvc.perform(post("/api/chat-messages")
+        mockMvc.perform(post("/api/chatMessage")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isNotFound());
@@ -226,7 +227,7 @@ class ChatMessageControllerTest {
     void put_existingId_shouldReturn200WithUpdatedMessage() throws Exception {
         Map<String, String> body = Map.of("message", "Updated message content");
 
-        mockMvc.perform(put("/api/chat-messages/{id}", savedMessage.getId())
+        mockMvc.perform(put("/api/chatMessage/{id}", savedMessage.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isOk())
@@ -239,7 +240,7 @@ class ChatMessageControllerTest {
     void put_nonExistingId_shouldReturn404() throws Exception {
         Map<String, String> body = Map.of("message", "Updated");
 
-        mockMvc.perform(put("/api/chat-messages/{id}", 999999L)
+        mockMvc.perform(put("/api/chatMessage/{id}", 999999L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isNotFound());
@@ -249,7 +250,7 @@ class ChatMessageControllerTest {
     void put_emptyMessage_shouldReturn400() throws Exception {
         Map<String, String> body = Map.of("message", "  ");
 
-        mockMvc.perform(put("/api/chat-messages/{id}", savedMessage.getId())
+        mockMvc.perform(put("/api/chatMessage/{id}", savedMessage.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
@@ -260,22 +261,22 @@ class ChatMessageControllerTest {
 
     @Test
     void delete_existingId_shouldReturn204() throws Exception {
-        mockMvc.perform(delete("/api/chat-messages/{id}", savedMessage.getId()))
+        mockMvc.perform(delete("/api/chatMessage/{id}", savedMessage.getId()))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void delete_nonExistingId_shouldReturn404() throws Exception {
-        mockMvc.perform(delete("/api/chat-messages/{id}", 999999L))
+        mockMvc.perform(delete("/api/chatMessage/{id}", 999999L))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void delete_thenGetByBookingId_shouldReturnEmptyList() throws Exception {
-        mockMvc.perform(delete("/api/chat-messages/{id}", savedMessage.getId()))
+        mockMvc.perform(delete("/api/chatMessage/{id}", savedMessage.getId()))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/api/chat-messages/booking/{bookingId}", testBooking.getId()))
+        mockMvc.perform(get("/api/chatMessage/booking/{bookingId}", testBooking.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }

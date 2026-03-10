@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LessonFeedbackRepository extends JpaRepository<LessonFeedback, Long> {
-    List<LessonFeedback> findByLessonId(Long lessonId);
-    Optional<LessonFeedback> findFirstByLessonId(Long lessonId);
+    List<LessonFeedback> findByBookingId(Long bookingId);
+    Optional<LessonFeedback> findFirstByBookingId(Long bookingId);
 
-    @Query("SELECT AVG(f.rating) FROM LessonFeedback f WHERE f.lessonId = :lessonId")
-    Double findAverageRatingByLessonId(@Param("lessonId") Long lessonId);
+    @Query("SELECT AVG(f.rating) FROM LessonFeedback f WHERE f.bookingId = :bookingId")
+    Double findAverageRatingByBookingId(@Param("bookingId") Long bookingId);
 }
