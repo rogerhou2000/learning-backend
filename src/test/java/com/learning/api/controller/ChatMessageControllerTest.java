@@ -62,6 +62,8 @@ class ChatMessageControllerTest {
         testUser.setEmail("testtutor@example.com");
         testUser.setPassword("hashedpassword");
         testUser.setRole(2);
+        testUser.setIsAdmin((byte) 0);
+        testUser.setWallet(0);
         testUser = userRepository.save(testUser);
 
 
