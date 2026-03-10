@@ -30,9 +30,6 @@ public class User {
     @Column(nullable = false)
     private Integer role;
 
-    @Column(nullable = false ,name="is_admin")
-    private Boolean IsAdmin;
-
     @Column(nullable=false)
     private Integer wallet;
 
