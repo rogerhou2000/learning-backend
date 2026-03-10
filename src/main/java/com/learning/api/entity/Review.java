@@ -1,4 +1,6 @@
 package com.learning.api.entity;
+import java.sql.Timestamp;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -24,4 +26,7 @@ public class Review {
 
     @Column(nullable = true, length = 1000)
     private String comment;
+
+    @Column(nullable = true,  insertable = false, updatable = false)
+    private Timestamp updated_at;
 }
