@@ -32,5 +32,5 @@ public class Order {
     private Integer lessonUsed;
     
     @Column(name = "status", nullable = false)
-    private Integer status;
+    private Integer status; //1 pending 2deal 3complete
 }
