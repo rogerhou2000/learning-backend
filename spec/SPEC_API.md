@@ -16,7 +16,7 @@ Base URL: `http://localhost:8080`
 
 * **請求資訊（HTTP Request）**
 - Method: `GET`
-- URL: `/api/chatMessage/booking/{bookingId}`  <!-- controller mapping uses singular chatMessage -->
+- URL: `/api/chatMessage/booking/{bookingId}`  
 - Headers: 無特殊需求
 - Payload: 無
 
@@ -343,7 +343,7 @@ Base URL: `http://localhost:8080`
 
 * **請求資訊（HTTP Request）**
 - Method: `GET`
-- URL: `/api/Feedbacks`  <!-- controller path uses capital F -->
+- URL: `/api/Feedbacks`  
 - Payload: 無
 
 * **回應內容 (Response)**
@@ -388,7 +388,7 @@ Base URL: `http://localhost:8080`
 
 * **請求資訊（HTTP Request）**
 - Method: `GET`
-- URL: `/api/Feedbacks/lesson/{bookingId}`  <!-- parameter is bookingId in controller -->
+- URL: `/api/Feedbacks/lesson/{bookingId}`  
 - Payload: 無
 
 * **回應內容 (Response)**
@@ -640,6 +640,9 @@ public class MemberController { ... }
 | 實體 | 資料表 | 主鍵 | 重要欄位 |
 |---|---|---|---|
 | `ChatMessage` | `chat_messages` | `id` (Long, 自動生成) | `booking_id` (不可為空)、`role` (Byte, 不可為空)、`message` (最長 1000)、`created_at` (自動產生，唯讀) |
+
 | `Review` | `reviews` | `id` (Long, 自動生成) | `user_id` (不可為空)、`course_id` (不可為空)、`rating` (Byte, 不可為空)、`comment` (最長 1000, 可為空) |
+
 | `LessonFeedback` | `lesson_feedback` | `id` (Long, 自動生成) | `lesson_id` (不可為空)、`rating` (Byte, 不可為空)、`comment` (最長 1000, 可為空) |
+
 | `Member` | `users` | `id` (Long, 自動生成) | `email` (不可為空, 唯一)、`password` (不可為空)、`role` (不可為空) |

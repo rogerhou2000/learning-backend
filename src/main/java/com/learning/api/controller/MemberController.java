@@ -17,9 +17,9 @@ public class MemberController {
     private MemberService memberService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User member){
+    public ResponseEntity<?> register(@RequestBody User user){
 
-        if (!memberService.register(member)) {
+        if (!memberService.register(user)) {
             return ResponseEntity.status(400).body(Map.of("msg", "註冊失敗"));
         }
 
