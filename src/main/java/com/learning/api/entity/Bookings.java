@@ -31,10 +31,10 @@ public class Bookings {
     private LocalDate date;
 
     @Column(nullable = false)
-    private Byte hour;
+    private Integer hour;
 
     @Column(name = "slot_locked")
-    private Byte slotLocked;
+    private Boolean slotLocked;//請假OR退款SETNULL
 
     @Column(nullable = false)
     private Byte status;

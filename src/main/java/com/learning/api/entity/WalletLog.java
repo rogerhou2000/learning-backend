@@ -3,7 +3,9 @@ package com.learning.api.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
+
+import java.time.Instant;
+
 
 @Entity
 @Table(name = "wallet_logs")
@@ -53,6 +55,6 @@ public class WalletLog {
      * DB 自動產生
      */
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
 }

@@ -14,30 +14,32 @@ import lombok.Setter;
 public class Tutor {
     @Id
     private Long id;
-
-    @Column(name = "title", length = 50)
+    @Column(length = 50)
     private String title;
+
+    @Column(length = 500)
+    private String avatar; //大頭照url
 
     @Column(length = 1000)
     private String intro;
 
-    @Column(name = "certificate_1", length = 500)
-    private String certificate1;
+    @Column(name ="certificate_1" ,length = 500)
+    private String certificate1;//位址
 
-    @Column(name = "certificate_name_1", length = 500)
-    private String certificateName1;
+    @Column(name ="certificate_name_1" ,length = 500)
+    private String certificateName1;//證照名稱
 
-    @Column(name = "certificate_2", length = 500)
-    private String certificate2;
-
-    @Column(name = "certificate_name_2", length = 500)
-    private String certificateName2;
+    @Column(name ="certificate_2" ,length = 500)
+    private String certificate2;//位址
+    
+    @Column(name ="certificate_name_2" ,length = 500)
+    private String certificateName2;//證照名稱
 
     @Column(name = "video_url_1", length = 500)
-    private String videoUrl1;
+    private String videoUrl1; //自我介紹影片url
 
     @Column(name = "video_url_2", length = 500)
-    private String videoUrl2;
+    private String videoUrl2;//試教介紹影片url
 
     @Column(name = "bank_code", length = 10)
     private String bankCode;
