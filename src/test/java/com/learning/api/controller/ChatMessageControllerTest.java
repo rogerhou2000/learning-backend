@@ -12,11 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import com.learning.api.entity.Order;
 import com.learning.api.entity.ChatMessage;
-<<<<<<< HEAD
 import com.learning.api.repo.OrderRepository;
-=======
-import com.learning.api.repo.OrderRepo;
->>>>>>> 873d81eeb5bae0eb2a6d9f604e4a0f533f7b70df
 import com.learning.api.repo.ChatMessageRepository;
 import com.learning.api.repo.CourseRepository;
 import com.learning.api.repo.UserRepository;
@@ -66,7 +62,7 @@ class ChatMessageControllerTest {
         testUser.setEmail("testtutor@example.com");
         testUser.setPassword("hashedpassword");
         testUser.setRole(2);
-        testUser.setWallet(0);
+        testUser.setWallet(0L);
         testUser = userRepository.save(testUser);
 
 
@@ -88,7 +84,7 @@ class ChatMessageControllerTest {
         testBooking.setLessonCount(1);
         testBooking.setLessonUsed(0);
         testBooking.setStatus(1);
-        testBooking = orderRepo.save(testBooking);
+        testBooking = bookingRepository.save(testBooking);
 
         ChatMessage msg = new ChatMessage();
         msg.setOrderId(testBooking.getId());

@@ -41,7 +41,7 @@ public class UserService {
             user.setRole(1); // 如果前端沒傳，預設給 1 (學生)
         }
         if (user.getWallet() == null) {
-            user.setWallet(0); // 預設錢包為 0
+            user.setWallet(0L); // 預設錢包為 0
         }
         // 管理員身份由 role 判斷（role=0 為管理員，role=1 為學生，role=2 為老師）
 
