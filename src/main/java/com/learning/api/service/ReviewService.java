@@ -46,7 +46,7 @@ public class ReviewService {
             validateReview(updatedReview);
             existing.setFocusScore(updatedReview.getFocusScore());
             existing.setComprehensionScore(updatedReview.getComprehensionScore());
-            existing.setConfidence_score(updatedReview.getConfidence_score());
+            existing.setConfidenceScore(updatedReview.getConfidenceScore());
             existing.setComment(updatedReview.getComment());
             return reviewRepository.save(existing);
         });
@@ -67,7 +67,7 @@ public class ReviewService {
         if (review.getComprehensionScore() == null) {
             throw new IllegalArgumentException("理解分數不能為空");
         }
-        if (review.getConfidence_score() == null) {
+        if (review.getConfidenceScore() == null) {
             throw new IllegalArgumentException("自信分數不能為空");
         }
         if (review.getComment() != null && review.getComment().length() > MAX_COMMENT_LENGTH) {

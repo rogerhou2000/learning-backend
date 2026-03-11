@@ -37,7 +37,7 @@ public class BookingService {
         if (course == null) return false;
 
         // check courseId isActive
-        if (!course.isActive()) return false;
+        if (!course.getActive()) return false;
 
         // buildOrder
         Order order = buildOrder(bookingReq, course);

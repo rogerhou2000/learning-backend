@@ -66,7 +66,7 @@ public class ReviewController {
             review.setCourseId(request.getCourseId());
             review.setFocusScore(request.getFocusScore());
             review.setComprehensionScore(request.getComprehensionScore());
-            review.setConfidence_score(request.getConfidenceScore());
+            review.setConfidenceScore(request.getConfidenceScore());
             review.setComment(request.getComment());
 
             Reviews saved = reviewService.save(review);

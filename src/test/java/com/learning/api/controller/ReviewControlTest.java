@@ -102,7 +102,7 @@ class ReviewControlTest {
         review.setCourseId(savedCourseId);
         review.setFocusScore(4);
         review.setComprehensionScore(3);
-        review.setConfidence_score(5);
+        review.setConfidenceScore(5);
         review.setComment("Initial comment");
         savedReview = reviewRepository.save(review);
     }
@@ -240,7 +240,7 @@ class ReviewControlTest {
         updateBody.setCourseId(savedReview.getCourseId());
         updateBody.setFocusScore(2);
         updateBody.setComprehensionScore(2);
-        updateBody.setConfidence_score(2);
+        updateBody.setConfidenceScore(2);
         updateBody.setComment("Updated comment");
 
         mockMvc.perform(put("/api/reviews/{id}", savedReview.getId())
@@ -259,7 +259,7 @@ class ReviewControlTest {
         updateBody.setCourseId(savedCourseId);
         updateBody.setFocusScore(3);
         updateBody.setComprehensionScore(3);
-        updateBody.setConfidence_score(3);
+        updateBody.setConfidenceScore(3);
         updateBody.setComment("Update comment");
 
         mockMvc.perform(put("/api/reviews/{id}", 999999L)

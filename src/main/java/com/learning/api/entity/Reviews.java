@@ -27,7 +27,7 @@ public class Reviews {
     private Integer comprehensionScore;
 
     @Column(name = "confidence_score", nullable = false)
-    private Integer confidence_score;
+    private Integer confidenceScore;
 
     @Column(nullable = true, length = 1000)
     private String comment;
