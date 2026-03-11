@@ -1,7 +1,7 @@
 package com.learning.api.controller;
 
 import com.learning.api.entity.User;
-import com.learning.api.service.MemberService;
+import com.learning.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ import java.util.Map;
 public class MemberController {
 
     @Autowired
-    private MemberService memberService;
+    private UserService memberService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user){
@@ -30,7 +30,7 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User member){
 
-        if (!memberService.login(member)){
+        if (!memberService.login(member.getEmail(), member.getPassword())){
             return ResponseEntity.status(401).body(Map.of("msg", "帳號或密碼錯誤"));
         }
 

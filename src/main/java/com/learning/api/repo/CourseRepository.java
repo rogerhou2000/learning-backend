@@ -7,5 +7,5 @@ import java.util.List;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
         // 找出某個老師所有「已上架」的課程
-    List<Course> findByTutorIdAndIsActive(Long tutorId, Integer isActive);
+    List<Course> findByTutorIdAndActive(Long tutorId, boolean active);
 }

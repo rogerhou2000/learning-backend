@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class BookingService {
 
     @Autowired
-    private UserRepo memberRepo;
+    private MemberRepo memberRepo;
 
     @Autowired
     private CourseRepository courseRepo;
