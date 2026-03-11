@@ -3,7 +3,7 @@ package com.learning.api.service;
 import com.learning.api.dto.TutorProfileDTO;
 import com.learning.api.entity.Tutor;
 import com.learning.api.entity.User;
-import com.learning.api.repo.TutorRepo;
+import com.learning.api.repo.TutorRepository;
 import com.learning.api.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class TutorProfileService {
     private UserRepo userRepo;
 
     @Autowired
-    private TutorRepo tutorRepo;
+    private TutorRepository tutorRepo;
 
     // 更新老師個人檔案
     @Transactional // 確保兩張表的更新同時成功或失敗
@@ -39,8 +39,10 @@ public class TutorProfileService {
         Tutor tutor = tutorRepo.findById(dto.getTutorId()).orElse(new Tutor());
         tutor.setId(dto.getTutorId()); // 綁定 ID
         tutor.setIntro(dto.getIntro());
-        tutor.setCertificate(dto.getCertificate());
+        tutor.setCertificate1(dto.getCertificate());
         tutor.setVideoUrl1(dto.getVideo());
+        tutor.setCertificate2(dto.getCertificate());
+        tutor.setVideoUrl2(dto.getVideo());
 
         tutorRepo.save(tutor);
 

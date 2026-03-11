@@ -29,7 +29,7 @@ public class ChatMessageService {
             .orElseThrow(() -> new NoSuchElementException("Booking ID: " + bookingId + " 不存在"));
 
         ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setBookingId(bookingId);
+        chatMessage.setOrderId(bookingId);
         chatMessage.setRole(role);
         chatMessage.setMessage(message);
 

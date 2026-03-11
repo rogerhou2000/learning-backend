@@ -13,10 +13,13 @@ public class BookingService {
     private MemberRepo memberRepo;
 
     @Autowired
-    private CourseRepo courseRepo;
+    private CourseRepository courseRepo;
 
     @Autowired
-    private BookingRepo bookingRepo;
+    private BookingRepository bookingRepo;
+
+    @Autowired
+    private OrderRepo orderRepo;
 
     // 之後 JWT 做完 改掉 bookingReq.getUserId() -> 這是前端送 id
     public boolean sendBooking(BookingReq bookingReq){
@@ -49,22 +52,24 @@ public class BookingService {
     private Bookings buildBooking(BookingReq bookingReq, Course course){
         Bookings booking = new Bookings();
 
-        // set & save
-        booking.setOrderId(null);
-        booking.setCourseId(bookingReq.getCourseId());
-
-        // price unitPrice discountPrice
+        // Create Order
+        Order order = new Order();
+        order.setUserId(bookingReq.getUserId());
+        order.setCourseId(bookingReq.getCourseId());
+        
+        // Price calculation
         Integer originalPrice = course.getPrice();
-        Integer discount = afterDiscPrice(originalPrice, bookingReq.getLessonCount());
+        Integer discountPrice = afterDiscPrice(originalPrice, bookingReq.getLessonCount());
+        
+        order.setUnitPrice(originalPrice);
+        order.setDiscountPrice(discountPrice);
+        order.setLessonCount(bookingReq.getLessonCount());
+        order.setStatus(1);
 
-        booking.setUnitPrice(originalPrice);
-        booking.setDiscountPrice(discount);
-
-        // lessonCount
-        booking.setLessonCount(bookingReq.getLessonCount());
-        // status first send -> 1
-        booking.setStatus((byte) 1);
-
+        // Save order and set its id to booking
+        Order savedOrder = orderRepo.save(order);
+        booking.setOrderId(savedOrder.getId());
+        
         return booking;
     }
 

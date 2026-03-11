@@ -1,7 +1,7 @@
 package com.learning.api.controller;
 
 import com.learning.api.entity.LessonFeedback;
-import com.learning.api.repo.LessonFeedbackRepo;
+import com.learning.api.repo.LessonFeedbackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ import java.util.Map;
 public class TutorFeedbackController {
 
     @Autowired
-    private LessonFeedbackRepo feedbackRepo;
+    private LessonFeedbackRepository feedbackRepo;
 
     // [POST] 老師送出課後回饋
     @PostMapping
