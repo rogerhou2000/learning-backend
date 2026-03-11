@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "bookings")
@@ -20,6 +20,7 @@ public class Bookings {
     @Column(name = "order_id")
     private Long orderId;
 
+
     @Column(name = "tutor_id", nullable = false)
     private Long tutorId;
 
@@ -27,7 +28,7 @@ public class Bookings {
     private Long studentId;
 
     @Column(nullable = false)
-    private Date date;
+    private LocalDate date;
 
     @Column(nullable = false)
     private Byte hour;

@@ -19,7 +19,7 @@ import com.learning.api.repo.OrderRepository;
 import com.learning.api.repo.UserRepository;
 
 import jakarta.transaction.Transactional;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
@@ -108,7 +108,7 @@ public class LessonFeedbackControllerTest {
         booking.setOrderId(order.getId());
         booking.setTutorId(tutor.getId());
         booking.setStudentId(student.getId());
-        booking.setDate(Date.valueOf("2025-01-01"));
+        booking.setDate(LocalDate.now());
         booking.setHour((byte) 10);
         booking.setStatus((byte) 1);
         booking = bookingRepository.save(booking);
