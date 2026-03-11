@@ -22,22 +22,22 @@ public class Tutor {
     private String title;
 
     @Column(length = 500)
-    private String avachar; //大頭照url
+    private String avatar; //大頭照url
 
     @Column(length = 1000)
     private String intro;
 
     @Column(name ="certificate_1" ,length = 500)
-    private String certificate_1;//位址
+    private String certificate1;//位址
 
     @Column(name ="certificate_name_1" ,length = 500)
-    private String certificate_name_1;//證照名稱
+    private String certificate_name1;//證照名稱
 
     @Column(name ="certificate_2" ,length = 500)
-    private String certificate_2;//位址
+    private String certificate2;//位址
     
     @Column(name ="certificate_name_2" ,length = 500)
-    private String certificate_name_2;//證照名稱
+    private String certificate_name2;//證照名稱
 
     @Column(name = "video_url_1", length = 500)
     private String videoUrl1; //自我介紹影片url
