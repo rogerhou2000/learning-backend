@@ -31,8 +31,6 @@ public class User {
     @Column(nullable = false)
     private Integer role; //1:student/2:teacher/3admin
 
-
-
     @Column(nullable = false)
     private Long wallet;
 
@@ -41,6 +39,5 @@ public class User {
     
     @Column(name = "updated_at", insertable = false, updatable = true)
     private Instant updatedAt;
-    
 
 }
