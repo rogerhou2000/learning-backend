@@ -4,8 +4,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "users")
@@ -36,10 +37,10 @@ public class User {
     private Integer wallet;
 
     @Column(name = "created_at", insertable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
     
     @Column(name = "updated_at", insertable = false, updatable = true)
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
     
 
 }

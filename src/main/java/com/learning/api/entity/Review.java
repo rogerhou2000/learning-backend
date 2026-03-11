@@ -1,5 +1,6 @@
 package com.learning.api.entity;
 import java.sql.Timestamp;
+import java.time.Instant;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -28,5 +29,5 @@ public class Review {
     private String comment;
 
     @Column(nullable = true,  insertable = false, updatable = false)
-    private Timestamp updated_at;
+    private Instant updated_at;
 }
