@@ -62,6 +62,8 @@ class ChatMessageControllerTest {
         testUser.setEmail("testtutor@example.com");
         testUser.setPassword("hashedpassword");
         testUser.setRole(2);
+        testUser.setIsAdmin((byte) 0);
+        testUser.setWallet(0);
         testUser = userRepository.save(testUser);
 
 
@@ -81,8 +83,8 @@ class ChatMessageControllerTest {
         testBooking.setUnitPrice(100);
         testBooking.setDiscountPrice(100);
         testBooking.setLessonCount(1);
-        testBooking.setLessonused(0);
-        testBooking.setStatus((byte)1);
+        testBooking.setLessonUsed(0);
+        testBooking.setStatus(1);
         testBooking = bookingRepository.save(testBooking);
 
         ChatMessage msg = new ChatMessage();

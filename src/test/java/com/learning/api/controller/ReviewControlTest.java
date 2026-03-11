@@ -59,6 +59,8 @@ class ReviewControlTest {
         testUser.setEmail("testuser@example.com");
         testUser.setPassword("hashedpassword");
         testUser.setRole(1);
+        testUser.setIsAdmin((byte) 0);
+        testUser.setWallet(0);
         testUser = userRepository.save(testUser);
         savedUserId = testUser.getId();
 
@@ -68,6 +70,8 @@ class ReviewControlTest {
         tutorUser.setEmail("testtutor@example.com");
         tutorUser.setPassword("hashedpassword");
         tutorUser.setRole(2);
+        tutorUser.setIsAdmin((byte) 0);
+        tutorUser.setWallet(0);
         tutorUser = userRepository.save(tutorUser);
 
         // create a course so fk_reviews_course constraint is satisfied
@@ -98,7 +102,7 @@ class ReviewControlTest {
         Review review = new Review();
         review.setUserId(savedUserId);
         review.setCourseId(savedCourseId);
-        review.setRating((byte) 4);
+        review.setRating(4);
         review.setComment("Initial comment");
         savedReview = reviewRepository.save(review);
     }
@@ -227,7 +231,7 @@ class ReviewControlTest {
         Review updateBody = new Review();
         updateBody.setUserId(savedReview.getUserId());
         updateBody.setCourseId(savedReview.getCourseId());
-        updateBody.setRating((byte) 2);
+        updateBody.setRating(2);
         updateBody.setComment("Updated comment");
 
         mockMvc.perform(put("/api/reviews/{id}", savedReview.getId())
@@ -244,7 +248,7 @@ class ReviewControlTest {
         Review updateBody = new Review();
         updateBody.setUserId(savedUserId);
         updateBody.setCourseId(savedCourseId);
-        updateBody.setRating((byte) 3);
+        updateBody.setRating(3);
         updateBody.setComment("Update comment");
     
         mockMvc.perform(put("/api/reviews/{id}", 999999L)

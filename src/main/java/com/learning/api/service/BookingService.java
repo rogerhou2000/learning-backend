@@ -18,7 +18,11 @@ public class BookingService {
     @Autowired
     private OrderRepository orderRepo;
 
+<<<<<<< HEAD
     // 之後 JWT 做完 改掉 OrderReq.getUserId() -> 這是前端送 id
+=======
+    // 之後 JWT 做完 改掉 bookingReq.getUserId() -> 這是前端送 id
+>>>>>>> 643af9dabe403cacc2abbf7617721c53ea9592a1
     public boolean sendBooking(BookingReq bookingReq){
 
         if (bookingReq == null) return false;
@@ -39,9 +43,15 @@ public class BookingService {
         // check courseId isActive
         if (!course.isActive()) return false;
 
+<<<<<<< HEAD
         // buildOrder
         Order order = buildOrder(bookingReq, course);
         orderRepo.save(order);
+=======
+        // buildBooking
+        Bookings booking = buildBooking(bookingReq, course);
+        bookingRepo.save(booking);
+>>>>>>> 643af9dabe403cacc2abbf7617721c53ea9592a1
 
         return true;
     }
