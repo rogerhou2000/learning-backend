@@ -28,6 +28,6 @@ public class Review {
     @Column(nullable = true, length = 1000)
     private String comment;
 
-    @Column(nullable = true,  insertable = false, updatable = false)
-    private Instant updated_at;
+    @Column(name = "updated_at", nullable = true,  insertable = false, updatable = false)
+    private Instant updatedAt;
 }
