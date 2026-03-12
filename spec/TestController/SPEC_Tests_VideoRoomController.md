@@ -12,7 +12,7 @@
 | Mock 物件 | `SimpMessagingTemplate`、`ChatMessageService` |
 | 注入方式 | `@InjectMocks VideoRoomController` |
 | 測試 bookingId | `42L`（常數 `BOOKING_ID`） |
-| 測試數量 | 16 個測試方法 |
+| 測試數量 | 17 個測試方法 |
 
 > 與其他 Controller Test 不同，VideoRoomController 使用**純單元測試（Mockito）**，不啟動 Spring Context，無資料庫操作。
 

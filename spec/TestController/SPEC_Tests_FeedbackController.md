@@ -12,7 +12,7 @@
 | HTTP 測試 | MockMvc (`webAppContextSetup`) |
 | 交易管理 | `@Transactional`（每個測試後自動 rollback） |
 | Base URL | `/api/feedbacks` |
-| 測試數量 | 16 個測試方法 |
+| 測試數量 | 18 個測試方法 |
 
 ---
 

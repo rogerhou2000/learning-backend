@@ -11,7 +11,7 @@
 | 測試類型 | 整合測試 (`@SpringBootTest`) |
 | HTTP 測試 | MockMvc (`webAppContextSetup`) |
 | 交易管理 | `@Transactional`（每個測試後自動 rollback） |
-| 測試數量 | 14 個測試方法 |
+| 測試數量 | 15 個測試方法 |
 
 ---
 

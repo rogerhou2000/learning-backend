@@ -19,13 +19,15 @@
 
 | 測試檔案 | 測試類型 | 測試數量 | 規格文件 |
 |---|---|---|---|
-| `ChatMessageControllerTest` | 整合測試 | 17 | [SPEC_Tests_ChatMessageController.md](./SPEC_Tests_ChatMessageController.md) |
-| `LessonFeedbackControllerTest` | 整合測試 | 16 | [SPEC_Tests_FeedbackController.md](./SPEC_Tests_FeedbackController.md) |
-| `ReviewControlTest` | 整合測試 | 14 | [SPEC_Tests_ReviewController.md](./SPEC_Tests_ReviewController.md) |
-| `VideoRoomControllerTest` | 單元測試（Mockito） | 16 | [SPEC_Tests_VideoRoomController.md](./SPEC_Tests_VideoRoomController.md) |
+| `BookingControllerTest` | 整合測試 | 9 | [SPEC_Tests_BookingController.md](./SPEC_Tests_BookingController.md) |
+| `ChatMessageControllerTest` | 整合測試 | 21 | [SPEC_Tests_ChatMessageController.md](./SPEC_Tests_ChatMessageController.md) |
+| `LessonFeedbackControllerTest` | 整合測試 | 18 | [SPEC_Tests_FeedbackController.md](./SPEC_Tests_FeedbackController.md) |
+| `OrderControllerTest` | 整合測試 | 20 | [SPEC_Tests_OrderController.md](./SPEC_Tests_OrderController.md) |
+| `ReviewControlTest` | 整合測試 | 15 | [SPEC_Tests_ReviewController.md](./SPEC_Tests_ReviewController.md) |
+| `VideoRoomControllerTest` | 單元測試（Mockito） | 17 | [SPEC_Tests_VideoRoomController.md](./SPEC_Tests_VideoRoomController.md) |
 | `ApiApplicationTests` | Context 載入測試 | 1 | 見下方說明 |
 
-**總計：64 個測試方法**
+**總計：101 個測試方法**
 
 ---
 
