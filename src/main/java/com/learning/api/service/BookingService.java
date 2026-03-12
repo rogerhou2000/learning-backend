@@ -13,7 +13,7 @@ public class BookingService {
     private UserRepository userRepo;
 
     @Autowired
-    private CourseRepository courseRepo;
+    private CourseRepo courseRepo;
 
     @Autowired
     private OrderRepository orderRepo;
