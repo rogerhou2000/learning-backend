@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>老師個人檔案測試工具</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── 頂部設定列 ── */
+    .topbar {
+      background: #1a73e8;
+      color: #fff;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .topbar h1 { font-size: 16px; font-weight: 700; white-space: nowrap; }
+    .topbar label { font-size: 13px; white-space: nowrap; opacity: 0.85; }
+    .topbar input {
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 13px;
+      width: 220px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+    .topbar input::placeholder { color: rgba(255,255,255,0.6); }
+    .topbar input:focus { outline: 2px solid rgba(255,255,255,0.6); background: rgba(255,255,255,0.25); }
+    .topbar-hint { font-size: 12px; opacity: 0.7; margin-left: auto; }
+
+    /* ── 主體佈局 ── */
+    .layout {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    /* ── 卡片 ── */
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 16px;
+    }
+    .card h2 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a73e8;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e8f0fe;
+    }
+
+    /* ── 表單元素 ── */
+    .form-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .form-row label {
+      font-size: 12px;
+      color: #555;
+      min-width: 90px;
+      padding-top: 7px;
+    }
+    .required-badge {
+      font-size: 10px;
+      color: #ea4335;
+      font-weight: 700;
+      margin-left: 2px;
+    }
+    input[type="number"], input[type="text"] {
+      padding: 6px 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+      flex: 1;
+      min-width: 0;
+    }
+    textarea {
+      padding: 6px 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+      flex: 1;
+      min-width: 0;
+      resize: vertical;
+    }
+
+    /* ── 按鈕 ── */
+    .btn {
+      padding: 8px 16px;
+      background: #1a73e8;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-top: 4px;
+      width: 100%;
+    }
+    .btn:hover { background: #1557b0; }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      width: auto;
+      margin-top: 0;
+    }
+    .btn-outline {
+      background: transparent;
+      color: #1a73e8;
+      border: 1px solid #1a73e8;
+    }
+    .btn-outline:hover { background: #e8f0fe; }
+
+    /* ── 回應區 ── */
+    .response-area {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      font-family: 'Consolas', monospace;
+      font-size: 12px;
+      padding: 10px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      min-height: 48px;
+      max-height: 160px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+    .response-area.ok  { color: #a8d8a8; }
+    .response-area.err { color: #f48771; }
+
+    /* ── 情境測試列 ── */
+    .scenario-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .scenario-label {
+      font-size: 12px;
+      color: #555;
+      min-width: 160px;
+    }
+
+    /* ── 說明卡 ── */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    .info-table th, .info-table td {
+      padding: 6px 10px;
+      border: 1px solid #e0e0e0;
+      text-align: left;
+    }
+    .info-table th {
+      background: #f5f5f5;
+      font-weight: 600;
+      color: #333;
+    }
+    .tag-required { color: #ea4335; font-weight: 700; }
+    .tag-optional { color: #188038; font-weight: 700; }
+    .code { font-family: 'Consolas', monospace; background: #f5f5f5; padding: 1px 4px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>👩‍🏫 老師個人檔案測試工具</h1>
+  <label for="serverUrl">伺服器 URL</label>
+  <input id="serverUrl" type="text" value="http://localhost:8080" placeholder="http://localhost:8080" />
+  <span class="topbar-hint">測試 PUT /api/teacher/profile</span>
+</div>
+
+<div class="layout">
+
+  <!-- Card 1: PUT 更新老師個人檔案 -->
+  <div class="card">
+    <h2>PUT / 更新老師個人檔案</h2>
+
+    <div class="form-row">
+      <label for="tutorId">老師 ID <span class="required-badge">必填</span></label>
+      <input id="tutorId" type="number" placeholder="例：1" />
+    </div>
+    <div class="form-row">
+      <label for="name">姓名</label>
+      <input id="name" type="text" placeholder="選填，留空則不更新姓名" />
+    </div>
+    <div class="form-row">
+      <label for="intro">自我介紹</label>
+      <textarea id="intro" rows="3" placeholder="選填"></textarea>
+    </div>
+    <div class="form-row">
+      <label for="certificate">證照連結</label>
+      <input id="certificate" type="text" placeholder="選填，https://..." />
+    </div>
+    <div class="form-row">
+      <label for="video">影片連結</label>
+      <input id="video" type="text" placeholder="選填，https://..." />
+    </div>
+
+    <button class="btn" onclick="updateProfile()">儲存個人檔案</button>
+    <pre class="response-area" id="res-put">— 尚未發送請求 —</pre>
+  </div>
+
+  <!-- Card 2: 快速情境測試 -->
+  <div class="card">
+    <h2>快速情境測試</h2>
+
+    <div class="scenario-row">
+      <span class="scenario-label">測試：缺少老師 ID</span>
+      <button class="btn btn-outline btn-sm" onclick="testMissingId()">發送（預期 400）</button>
+    </div>
+    <pre class="response-area" id="res-missing-id">—</pre>
+
+    <div class="scenario-row" style="margin-top:12px;">
+      <span class="scenario-label">測試：不存在的老師</span>
+      <button class="btn btn-outline btn-sm" onclick="testNotFound()">發送（預期 404）</button>
+    </div>
+    <pre class="response-area" id="res-not-found">—</pre>
+
+    <div class="scenario-row" style="margin-top:12px;">
+      <span class="scenario-label">測試：只更新介紹</span>
+      <button class="btn btn-outline btn-sm" onclick="testIntroOnly()">發送（預期 200）</button>
+    </div>
+    <p style="font-size:11px;color:#888;margin-bottom:4px;">使用左側表單填入的老師 ID</p>
+    <pre class="response-area" id="res-intro-only">—</pre>
+  </div>
+
+  <!-- Card 3: 說明 -->
+  <div class="card">
+    <h2>端點說明</h2>
+    <table class="info-table">
+      <tr>
+        <th>欄位</th>
+        <th>型別</th>
+        <th>必填</th>
+        <th>說明</th>
+      </tr>
+      <tr>
+        <td><span class="code">tutorId</span></td>
+        <td>Long</td>
+        <td><span class="tag-required">必填</span></td>
+        <td>老師的使用者 ID</td>
+      </tr>
+      <tr>
+        <td><span class="code">name</span></td>
+        <td>String</td>
+        <td><span class="tag-optional">選填</span></td>
+        <td>更新 users 表的姓名，留空則不變</td>
+      </tr>
+      <tr>
+        <td><span class="code">intro</span></td>
+        <td>String</td>
+        <td><span class="tag-optional">選填</span></td>
+        <td>更新 tutors 表的自我介紹</td>
+      </tr>
+      <tr>
+        <td><span class="code">certificate</span></td>
+        <td>String</td>
+        <td><span class="tag-optional">選填</span></td>
+        <td>同時寫入 certificate_1 與 certificate_2</td>
+      </tr>
+      <tr>
+        <td><span class="code">video</span></td>
+        <td>String</td>
+        <td><span class="tag-optional">選填</span></td>
+        <td>同時寫入 video_url_1 與 video_url_2</td>
+      </tr>
+    </table>
+
+    <table class="info-table" style="margin-top:10px;">
+      <tr><th>狀態</th><th>情況</th><th>回應範例</th></tr>
+      <tr>
+        <td>200 OK</td>
+        <td>成功更新</td>
+        <td><span class="code">{"msg": "個人檔案儲存成功！…"}</span></td>
+      </tr>
+      <tr>
+        <td>400 Bad Request</td>
+        <td>未提供 tutorId</td>
+        <td><span class="code">{"msg": "必須提供老師 ID"}</span></td>
+      </tr>
+      <tr>
+        <td>404 Not Found</td>
+        <td>老師 ID 不存在</td>
+        <td><span class="code">{"msg": "更新失敗，找不到該名老師"}</span></td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<script>
+  function getServerUrl() {
+    return document.getElementById('serverUrl').value.replace(/\/+$/, '');
+  }
+
+  function showResponse(areaId, status, data) {
+    const el = document.getElementById(areaId);
+    el.textContent = `HTTP ${status}\n${JSON.stringify(data, null, 2)}`;
+    el.className = 'response-area ' + (status >= 400 ? 'err' : 'ok');
+  }
+
+  async function apiFetch(body, areaId) {
+    const url = getServerUrl() + '/api/teacher/profile';
+    const el  = document.getElementById(areaId);
+    el.className = 'response-area';
+    el.textContent = '傳送中…';
+
+    try {
+      const res  = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const text = await res.text();
+      let parsed;
+      try { parsed = JSON.parse(text); } catch { parsed = text; }
+      showResponse(areaId, res.status, parsed);
+    } catch (e) {
+      el.textContent = '連線錯誤: ' + e.message;
+      el.className = 'response-area err';
+    }
+  }
+
+  // 主表單送出
+  async function updateProfile() {
+    const tutorIdVal = document.getElementById('tutorId').value;
+    const body = {};
+    if (tutorIdVal) body.tutorId = parseInt(tutorIdVal);
+
+    const name = document.getElementById('name').value.trim();
+    if (name) body.name = name;
+
+    const intro = document.getElementById('intro').value.trim();
+    if (intro) body.intro = intro;
+
+    const cert = document.getElementById('certificate').value.trim();
+    if (cert) body.certificate = cert;
+
+    const video = document.getElementById('video').value.trim();
+    if (video) body.video = video;
+
+    await apiFetch(body, 'res-put');
+  }
+
+  // 情境 1: 缺少 tutorId
+  async function testMissingId() {
+    await apiFetch({}, 'res-missing-id');
+  }
+
+  // 情境 2: 不存在的老師
+  async function testNotFound() {
+    await apiFetch({ tutorId: 999999 }, 'res-not-found');
+  }
+
+  // 情境 3: 只更新介紹（用主表單的 tutorId）
+  async function testIntroOnly() {
+    const tutorIdVal = document.getElementById('tutorId').value;
+    if (!tutorIdVal) { alert('請在上方表單填入老師 ID'); return; }
+    await apiFetch({ tutorId: parseInt(tutorIdVal), intro: '測試介紹（自動填入）' }, 'res-intro-only');
+  }
+</script>
+</body>
+</html>

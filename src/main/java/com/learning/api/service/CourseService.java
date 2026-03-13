@@ -7,6 +7,10 @@ import com.learning.api.repo.CourseRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 @Service
 public class CourseService {
     @Autowired
@@ -15,8 +19,10 @@ public class CourseService {
     @Autowired
     private CourseRepo courseRepo;
 
-    // bookingReq.getUserId() -> 這是前端送 id
-    public boolean sendCourses(CourseReq courseReq){
+    private static final Set<Integer> VALID_SUBJECTS = Set.of(11, 12, 13, 21, 22, 23, 31);
+
+    // POST 建立課程
+    public boolean sendCourses(CourseReq courseReq) {
 
         if (courseReq == null) {
             System.out.println("courseReq is null");
@@ -25,64 +31,107 @@ public class CourseService {
 
         // check null
         if (courseReq.getTutorId() == null || courseReq.getName() == null ||
-            courseReq.getSubject() == null  || courseReq.getLevel() == null ||
-                courseReq.getPrice() == null || courseReq.getActive() == null) return false;
+            courseReq.getSubject() == null || courseReq.getPrice() == null ||
+            courseReq.getActive() == null) return false;
 
         if (courseReq.getName().trim().isEmpty()) {
             System.out.println("name is empty");
             return false;
         }
 
-        // 有要設定這堂課不開就不能 post 嗎？ (暫時先：對）
-        // if (!courseReq.isActive()) return false;
-
-        // 先設定 1 塊就可開課 要改最低多少再改
         if (courseReq.getPrice() <= 0) {
             System.out.println("price is wrong");
             return false;
         }
 
-        // 目前只有 1 英文科 2 程式語言科 不能 0 負數
-        if (courseReq.getSubject() <= 0) return false;
-        if (courseReq.getSubject()!=1 || courseReq.getSubject()!=2) return false;
+        // subject: 11低年級 12中年級 13高年級 21GEPT 22YLE 23國中先修 31其他
+        if (!VALID_SUBJECTS.contains(courseReq.getSubject())) return false;
 
-        // level 1-5 不能 0 負數
-        if (courseReq.getLevel() <= 0) return false;
-        if (courseReq.getLevel() <1 || courseReq.getLevel() >5) return false;
+        // level 若有填寫則需在 1-5 之間
+        if (courseReq.getLevel() != null && (courseReq.getLevel() < 1 || courseReq.getLevel() > 5)) return false;
 
-        // member existsById
+        // 確認老師存在且 role == 2
         User tutor = userRepo.findById(courseReq.getTutorId()).orElse(null);
-        if ( tutor == null ) {
+        if (tutor == null) {
             System.out.println("tutor is null");
             return false;
         }
-
-        // 只有老師可以新增課程
         if (tutor.getRole() != 2) {
             System.out.println("user isn't tutor");
             return false;
         }
 
-        // buildCourses
-        Course course = buildCourses(courseReq);
-        courseRepo.save(course);
-
-        // member existsById
+        courseRepo.save(buildCourses(courseReq));
         return true;
     }
 
-    private Course buildCourses(CourseReq courseReq){
+    // GET 全部課程
+    public List<Course> findAll() {
+        return courseRepo.findAll();
+    }
 
+    // GET 單筆課程
+    public Optional<Course> findById(Long id) {
+        return courseRepo.findById(id);
+    }
+
+    // GET 老師所有課程（不分上下架）
+    public List<Course> findByTutorId(Long tutorId) {
+        return courseRepo.findByTutorId(tutorId);
+    }
+
+    // GET 老師已上架課程
+    public List<Course> findByTutorIdActive(Long tutorId) {
+        return courseRepo.findByTutorIdAndActive(tutorId, true);
+    }
+
+    // PUT 更新課程
+    public Optional<Course> updateCourse(Long id, CourseReq req) {
+        return courseRepo.findById(id).map(existing -> {
+            validateCourseReq(req);
+            existing.setName(req.getName().trim());
+            existing.setSubject(req.getSubject());
+            /* if (req.getLevel() != null) existing.setLevel(req.getLevel()); */
+            if (req.getDescription() != null) existing.setDescription(req.getDescription());
+            existing.setPrice(req.getPrice());
+            existing.setActive(req.getActive());
+            return courseRepo.save(existing);
+        });
+    }
+
+    // DELETE 刪除課程
+    public boolean deleteById(Long id) {
+        if (courseRepo.existsById(id)) {
+            courseRepo.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    // 驗證課程資料（不含 tutor 角色驗證，供 update 使用）
+    private void validateCourseReq(CourseReq req) {
+        if (req == null) throw new IllegalArgumentException("課程資料不能為空");
+        if (req.getName() == null || req.getName().trim().isEmpty())
+            throw new IllegalArgumentException("課程標題不能為空");
+        if (req.getSubject() == null || !VALID_SUBJECTS.contains(req.getSubject()))
+            throw new IllegalArgumentException("科目代碼無效，有效值為 11/12/13/21/22/23/31");
+        if (req.getPrice() == null || req.getPrice() <= 0)
+            throw new IllegalArgumentException("定價必須大於 0");
+        if (req.getActive() == null)
+            throw new IllegalArgumentException("上架狀態不能為空");
+        if (req.getLevel() != null && (req.getLevel() < 1 || req.getLevel() > 5))
+            throw new IllegalArgumentException("難易度必須在 1-5 之間");
+    }
+
+    private Course buildCourses(CourseReq courseReq) {
         Course course = new Course();
-        //set
         course.setTutorId(courseReq.getTutorId());
         course.setName(courseReq.getName().trim());
         course.setSubject(courseReq.getSubject());
-        course.setLevel(courseReq.getLevel());
+        /* course.setLevel(courseReq.getLevel()); */
         course.setDescription(courseReq.getDescription());
         course.setPrice(courseReq.getPrice());
         course.setActive(courseReq.getActive());
-
         return course;
     }
 }
