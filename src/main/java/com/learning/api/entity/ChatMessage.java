@@ -27,9 +27,12 @@ public class ChatMessage {
     @Column(length = 1000)
     private String message;
 
-    @Column(name = "media_url", length = 500)
-    private String mediaUrl;
+    @Column(name ="message_type", nullable = false)
+    private Integer messageType; //1文字 2貼圖
 
+    @Column(name="media_url",length=500)
+    private String mediaUrl;
+    
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
 }
