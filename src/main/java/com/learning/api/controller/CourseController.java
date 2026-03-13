@@ -1,23 +1,29 @@
 package com.learning.api.controller;
 
+<<<<<<< HEAD
 import com.learning.api.dto.*;
 import com.learning.api.entity.Course;
 import com.learning.api.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+=======
+import com.learning.api.annotation.ApiController;
+import com.learning.api.dto.CourseReq;
+import com.learning.api.service.CourseService;
+import lombok.RequiredArgsConstructor;
+>>>>>>> 057704559886e802faa1eb5122deeb7c5f261e7a
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = "*")
-@RestController
+@ApiController
 @RequestMapping("/api/courses")
+@RequiredArgsConstructor
 public class CourseController {
 
-    @Autowired
-    private CourseService courseService;
+    private final CourseService courseService;
 
     @GetMapping
     public ResponseEntity<?> getAllCourses() {
@@ -32,6 +38,7 @@ public class CourseController {
     }
 
     @PostMapping
+<<<<<<< HEAD
     public ResponseEntity<?> sendCourses(@RequestBody CourseReq courseReq){
         if (!courseService.sendCourses(courseReq)) return ResponseEntity.status(400).body(Map.of("msg", "建立失敗"));
 
@@ -100,4 +107,12 @@ public class CourseController {
             return message;
         }
     }
+=======
+    public ResponseEntity<?> sendCourses(@RequestBody CourseReq courseReq) {
+        if (!courseService.sendCourses(courseReq)) {
+            return ResponseEntity.status(400).body(Map.of("message", "建立失敗"));
+        }
+        return ResponseEntity.ok(Map.of("message", "ok"));
+    }
+>>>>>>> 057704559886e802faa1eb5122deeb7c5f261e7a
 }
