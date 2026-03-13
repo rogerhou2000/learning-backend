@@ -41,6 +41,10 @@ public class SecurityConfig {
                         .requestMatchers("/ws/**").permitAll()
                         // 測試用靜態頁面
                         .requestMatchers("/*.html").permitAll()
+                        // 靜態資源
+                        .requestMatchers("/favicon.ico").permitAll()
+                        // teacher profile (public)
+                        .requestMatchers("/api/teacher/**").permitAll()
                         
                         
                         .anyRequest().authenticated()
