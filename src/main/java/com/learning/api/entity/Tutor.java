@@ -14,13 +14,13 @@ import lombok.Setter;
 public class Tutor {
     @Id
     private Long id;
-    @Column(length = 50)
+    @Column(name = "title", length = 50)
     private String title;
 
-    @Column(length = 500)
+    @Column(name = "avatar_url",length = 500)
     private String avatar; //大頭照url
 
-    @Column(length = 1000)
+    @Column(name = "intro",length = 1000)
     private String intro;
 
     @Column(name ="certificate_1" ,length = 500)
@@ -41,11 +41,14 @@ public class Tutor {
     @Column(name = "video_url_2", length = 500)
     private String videoUrl2;//試教介紹影片url
 
+    @Column(name = "education", length = 100)
+    private String education; // 最高學歷
+
     @Column(name = "bank_code", length = 10)
     private String bankCode;
 
     @Column(name = "bank_account", length = 20)
     private String bankAccount;
-    
-  
+
+
 }
