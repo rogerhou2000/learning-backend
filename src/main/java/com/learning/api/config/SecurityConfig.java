@@ -23,12 +23,8 @@ public class SecurityConfig {
                 // /api/auth
                 .authorizeHttpRequests(auth -> auth
                         // 測試 正式上線要刪
-<<<<<<< HEAD
-                        //.requestMatchers("/api/TestController").permitAll()
-=======
                         // .requestMatchers("/api/TestController").permitAll()
                 	    .requestMatchers("/test-email/**").permitAll()
->>>>>>> 344655abb502ba63c33f0324a74a7ae71e057652
 
                         //.requestMatchers("/api/auth/**").permitAll()
                         // teacher
