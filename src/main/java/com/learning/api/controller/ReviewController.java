@@ -1,18 +1,32 @@
 package com.learning.api.controller;
 
+<<<<<<< HEAD
 import com.learning.api.annotation.ApiController;
 import com.learning.api.dto.ReviewRequest;
 import com.learning.api.entity.Reviews;
 import com.learning.api.service.ReviewService;
+=======
+>>>>>>> upstream/feature/Review
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+<<<<<<< HEAD
 
 import java.util.List;
 import java.util.Map;
 
 @ApiController
+=======
+import com.learning.api.dto.ReviewRequest;
+import com.learning.api.entity.Reviews;
+import com.learning.api.service.ReviewService;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
+@RestController
+>>>>>>> upstream/feature/Review
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
 public class ReviewController {
@@ -51,6 +65,7 @@ public class ReviewController {
     }
 
     @PostMapping
+<<<<<<< HEAD
     public ResponseEntity<Reviews> create(@RequestBody ReviewRequest request) {
         if (request.getUserId() == null) throw new IllegalArgumentException("驗證失敗: userId 不能為空");
         if (request.getCourseId() == null) throw new IllegalArgumentException("驗證失敗: courseId 不能為空");
@@ -64,6 +79,39 @@ public class ReviewController {
         review.setComment(request.getComment());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.save(review));
+=======
+    public ResponseEntity<?> create(@RequestBody ReviewRequest request) {
+        try {
+            if (request.getUserId() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse("驗證失敗: userId 不能為空"));
+            }
+            if (request.getCourseId() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse("驗證失敗: courseId 不能為空"));
+            }
+
+            Reviews review = new Reviews();
+            review.setUserId(request.getUserId());
+            review.setCourseId(request.getCourseId());
+            review.setFocusScore(request.getFocusScore());
+            review.setComprehensionScore(request.getComprehensionScore());
+            review.setConfidenceScore(request.getConfidenceScore());
+            review.setComment(request.getComment());
+
+            Reviews saved = reviewService.save(review);
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("錯誤: " + e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("驗證失敗: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("伺服器錯誤: " + e.getMessage()));
+        }
+>>>>>>> upstream/feature/Review
     }
 
     @PutMapping("/{id}")
@@ -79,4 +127,25 @@ public class ReviewController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
+<<<<<<< HEAD
+=======
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new ErrorResponse("伺服器錯誤: " + e.getMessage()));
+    }
+
+    public static class ErrorResponse {
+        public String message;
+
+        public ErrorResponse(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
+>>>>>>> upstream/feature/Review
 }

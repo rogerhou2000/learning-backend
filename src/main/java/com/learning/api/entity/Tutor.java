@@ -1,5 +1,7 @@
 package com.learning.api.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -14,14 +16,29 @@ import lombok.Setter;
 public class Tutor {
     @Id
     private Long id;
+<<<<<<< HEAD
     @Column(name = "title", length = 50)
     private String title;
 
     @Column(name = "avatar_url",length = 500)
     private String avatar; //大頭照url
+=======
+
+    @Column(name="apply_date")
+    private LocalDate applyDate;
+    
+    @Column(length = 50)
+    private String title;
+
+    @Column(name = "avatar_url", length = 500)
+    private String avatarUrl; //大頭照url
+>>>>>>> upstream/feature/Review
 
     @Column(name = "intro",length = 1000)
     private String intro;
+
+    @Column(name="education",length=100)
+    private String education;//學歷
 
     @Column(name ="certificate_1" ,length = 500)
     private String certificate1;//位址
@@ -49,6 +66,13 @@ public class Tutor {
 
     @Column(name = "bank_account", length = 20)
     private String bankAccount;
+<<<<<<< HEAD
 
 
+=======
+    
+    @Column(name="status")
+    private Integer status;//1 pending 2qualified 3停權
+  
+>>>>>>> upstream/feature/Review
 }

@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+<<<<<<< HEAD:src/main/java/com/learning/api/entity/Bookings.java
+=======
+
+>>>>>>> upstream/feature/Review:src/main/java/com/learning/api/entity/Booking.java
 
 @Entity
 @Table(name = "bookings")
