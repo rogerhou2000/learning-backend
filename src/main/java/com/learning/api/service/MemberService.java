@@ -34,7 +34,7 @@ public class MemberService {
         newMember.setPassword(hashPassword);
         newMember.setBirthday(registerReq.getBirthday());
         newMember.setRole(registerReq.getRole());
-        newMember.setWallet(0);
+        newMember.setWallet(0L);
         return newMember;
     }
 

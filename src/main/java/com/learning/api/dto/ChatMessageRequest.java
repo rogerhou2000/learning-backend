@@ -9,8 +9,6 @@ public class ChatMessageRequest {
     private Integer messageType; // 1=text (default), 2=sticker, 3=voice, 4=image, 5=video
     private String message;
     private String mediaUrl;
-<<<<<<< HEAD
-=======
 
 /*{
     "bookingId": 1,
@@ -21,5 +19,4 @@ public class ChatMessageRequest {
   }*/
 
     // getter setter
->>>>>>> upstream/feature/Review
 }

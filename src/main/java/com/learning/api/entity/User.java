@@ -31,21 +31,12 @@ public class User {
     @Column(nullable = false)
     private Integer role; //1:student/2:teacher/3admin
 
-<<<<<<< HEAD
-    @Column(nullable = false)
-    private Long wallet;
-=======
     @Column(nullable=false)
-    private Integer wallet=0;
->>>>>>> upstream/feature/Review
+    private Long wallet=0L;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
     
     @Column(name = "updated_at", insertable = false, updatable = false)
     private Instant updatedAt;
-<<<<<<< HEAD
-
-=======
->>>>>>> upstream/feature/Review
 }

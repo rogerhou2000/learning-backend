@@ -1,11 +1,5 @@
 package com.learning.api.entity;
-<<<<<<< HEAD
-<<<<<<<< HEAD:src/main/java/com/learning/api/entity/Reviews.java
-========
-import java.time.Instant;
->>>>>>>> upstream/feature/Review:src/main/java/com/learning/api/entity/Review.java
-=======
->>>>>>> upstream/feature/Review
+
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -39,10 +33,6 @@ public class Reviews {
     @Column(nullable = true, length = 1000)
     private String comment;
 
-<<<<<<< HEAD
 /*     @Column(name = "updated_at", nullable = true,  insertable = false, updatable = false)
-=======
-/*     @Column(nullable = true,  insertable = false, updatable = false)
->>>>>>> upstream/feature/Review
     private Instant updatedAt; */
 }

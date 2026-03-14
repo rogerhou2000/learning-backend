@@ -10,8 +10,6 @@ public class FeedbackRequest {
     private Integer confidenceScore;
     private Integer rating;
     private String comment;
-<<<<<<< HEAD
-=======
 
 /*{
     "bookingId": 1,
@@ -23,5 +21,4 @@ public class FeedbackRequest {
   }*/
 
     // getter setter
->>>>>>> upstream/feature/Review
 }

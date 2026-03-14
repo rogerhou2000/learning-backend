@@ -13,7 +13,6 @@ import com.learning.api.entity.ChatMessage;
 import com.learning.api.enums.MessageType;
 import com.learning.api.service.ChatMessageService;
 
-<<<<<<< HEAD
 /**
  * 視訊聊天室 WebSocket 控制器
  *
@@ -28,9 +27,6 @@ import com.learning.api.service.ChatMessageService;
  *   /app/chat/{bookingId}    — 傳送聊天訊息（會持久化）
  *   /app/event/{bookingId}   — 傳送加入 / 離開事件
  */
-=======
-
->>>>>>> upstream/feature/Review
 @Controller
 @RequiredArgsConstructor
 public class VideoRoomController {
@@ -38,28 +34,22 @@ public class VideoRoomController {
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageService chatMessageService;
 
-<<<<<<< HEAD
     // ─── WebRTC 信令 ─────────────────────────────────────────────────────────
 
     /**
      * 中繼 WebRTC 信令（offer / answer / ICE candidate）給房間內另一端
      */
-=======
->>>>>>> upstream/feature/Review
     @MessageMapping("/signal/{bookingId}")
     public void signal(@DestinationVariable Long bookingId, SignalingMessage message) {
         messagingTemplate.convertAndSend(
             "/topic/room/" + bookingId + "/signal", message);
     }
 
-<<<<<<< HEAD
     // ─── 即時聊天 ─────────────────────────────────────────────────────────────
 
     /**
      * 接收聊天訊息，持久化後廣播給房間內所有人
      */
-=======
->>>>>>> upstream/feature/Review
     @MessageMapping("/chat/{bookingId}")
     public void chat(@DestinationVariable Long bookingId, ChatMessageRequest request) {
         int typeValue = request.getMessageType() != null
@@ -78,14 +68,11 @@ public class VideoRoomController {
             "/topic/room/" + bookingId + "/chat", saved);
     }
 
-<<<<<<< HEAD
     // ─── 房間事件 ─────────────────────────────────────────────────────────────
 
     /**
      * 廣播加入 / 離開事件給房間內所有訂閱者
      */
-=======
->>>>>>> upstream/feature/Review
     @MessageMapping("/event/{bookingId}")
     public void event(@DestinationVariable Long bookingId, RoomEvent event) {
         messagingTemplate.convertAndSend(

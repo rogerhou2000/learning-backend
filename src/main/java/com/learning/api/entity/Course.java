@@ -37,9 +37,5 @@ public class Course {
     private Integer price;
 
     @Column(name = "is_active", nullable = false)
-<<<<<<< HEAD
-    private Boolean active;
-=======
     private Boolean Active;
->>>>>>> upstream/feature/Review
 }

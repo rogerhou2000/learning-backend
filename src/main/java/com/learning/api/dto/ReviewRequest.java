@@ -10,8 +10,6 @@ public class ReviewRequest {
     private Integer comprehensionScore;
     private Integer confidenceScore;
     private String comment;
-<<<<<<< HEAD
-=======
 
 /*{
     "userId": 1,
@@ -23,5 +21,4 @@ public class ReviewRequest {
   }*/
 
     // getter setter
->>>>>>> upstream/feature/Review
 }
