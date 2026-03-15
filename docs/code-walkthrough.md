@@ -148,9 +148,11 @@ Client                          Server
 ```
 
 同一個 booking 房間有三個 topic：
-- `/topic/room/{id}/signal` — WebRTC ICE/SDP 訊號交換
-- `/topic/room/{id}/chat` — 文字聊天
-- `/topic/room/{id}/events` — 加入/離開事件
+- `/topic/room/{id}/signal` — WebRTC ICE/SDP 訊號交換（`SignalingMessage`，不持久化）
+- `/topic/room/{id}/chat` — 文字聊天（持久化至 `chat_messages`）
+- `/topic/room/{id}/events` — 加入/離開事件（`RoomEvent`，不持久化）
+
+只有 `/app/chat/{bookingId}` 路徑的訊息會透過 `ChatMessageService` 寫入資料庫。
 
 **關鍵檔案：** [VideoRoomController.java](../src/main/java/com/learning/api/controller/VideoRoomController.java)
 
@@ -164,8 +166,9 @@ Client                          Server
 Exception 類型                    → HTTP 狀態碼  回應格式
 ─────────────────────────────────────────────────────
 NoSuchElementException            → 404          ErrorResponse
+NoResourceFoundException          → 404          ErrorResponse
 IllegalArgumentException          → 400          ErrorResponse
-MethodArgumentNotValidException   → 400          欄位錯誤清單
+MethodArgumentNotValidException   → 400          Map<field, message>（扁平格式）
 Exception (其他)                  → 500          ErrorResponse
 ```
 
@@ -200,3 +203,38 @@ if (lessonCount >= 10) {
 Email 失敗不會中斷 API 回應（獨立 try-catch）。
 
 **關鍵檔案：** [EmailService.java](../src/main/java/com/learning/api/service/EmailService.java)
+
+---
+
+## 10. 檔案上傳流程
+
+`POST /api/chatMessage/upload` (multipart/form-data)
+
+```
+ChatMessageController.uploadFile(file, bookingId, role)
+  ├── [驗證] file.isEmpty() → 400 Bad Request
+  ├── [偵測] MIME type → MessageType
+  │     image/* → IMAGE(4), video/* → VIDEO(5)
+  │     audio/* → VOICE(3), 其他 → FILE(6)
+  │
+  ▼
+FileStorageService.store(file)
+  ├── 保留原始副檔名
+  ├── 生成 UUID 檔名：{uuid}{ext}
+  ├── Files.copy() → ${file.upload-dir}/{uuid}{ext}
+  └── 回傳 ${file.base-url}/uploads/{uuid}{ext}
+  │
+  ▼
+ChatMessageService.save(bookingId, role, messageType, null, fileUrl)
+  └── 持久化 ChatMessage（message=null, mediaUrl=fileUrl）
+  │
+  ▼
+ResponseEntity 201 Created — 儲存後的 ChatMessage
+```
+
+存入的 URL 可透過 `GET /uploads/{filename}` 存取，由 `WebConfig` 映射至磁碟。
+
+**關鍵檔案：**
+- [ChatMessageController.java](../src/main/java/com/learning/api/controller/ChatMessageController.java)
+- [FileStorageService.java](../src/main/java/com/learning/api/service/FileStorageService.java)
+- [WebConfig.java](../src/main/java/com/learning/api/config/WebConfig.java)

@@ -29,6 +29,7 @@ src/main/java/com/learning/api/
 ├── config/              # 組態設定
 │   ├── MailConfig        # 郵件寄送設定
 │   ├── WebSocketConfig   # WebSocket / STOMP 設定
+│   ├── WebConfig         # 靜態資源路徑對應（/uploads/** 映射至磁碟目錄）
 │   └── TestSecurityConfig# 測試用安全設定
 ├── controller/          # REST API 控制器（16 個）
 ├── dto/                 # 資料傳輸物件
@@ -77,13 +78,13 @@ src/main/java/com/learning/api/
 | `BookingController` | `/api/bookings` | 預約排課管理 |
 | `ReviewController` | `/api/reviews` | 課程評價 CRUD |
 | `FeedbackController` | `/api/feedbacks` | 課後回饋 CRUD |
-| `ChatMessageController` | `/api/chat-messages` | 聊天訊息（含多媒體） |
+| `ChatMessageController` | `/api/chatMessage` | 聊天訊息（含多媒體） |
 | `TeacherController` | `/api/teacher` | 教師課程建立（公開） |
 | `TutorController` | `/api/tutors` | 教師查詢 |
-| `TutorProfileController` | — | 教師個人資料更新 |
-| `TutorScheduleController` | — | 教師排課時段管理 |
-| `TutorFeedbackController` | — | 教師發送課後回饋 |
-| `CheckoutController` | — | 結帳作業 |
+| `TutorProfileController` | `/api/teacher/profile` | 教師個人資料更新 |
+| `TutorScheduleController` | `/api/teacher/schedules` | 教師排課時段管理 |
+| `TutorFeedbackController` | `/api/teacher/feedbacks` | 教師發送課後回饋 |
+| `CheckoutController` | `/api/shop` | 結帳作業 |
 | `VideoRoomController` | `/ws` | WebSocket 視訊聊天（WebRTC 信令、即時訊息） |
 
 ### 3.3 服務層 (Service)
@@ -105,6 +106,7 @@ src/main/java/com/learning/api/
 | `PaymentService` | 付款處理 |
 | `CheckoutService` | 結帳流程 |
 | `TeacherCourseService` | 教師端課程操作 |
+| `FileStorageService` | 接受 MultipartFile，UUID 命名後儲存至 `${file.upload-dir}`，回傳 `${file.base-url}/uploads/{uuid}{ext}` URL |
 
 ---
 
@@ -234,9 +236,12 @@ flowchart TD
 | `GET /api/teacher/**` | 公開（瀏覽教師資料） |
 | `GET /api/reviews/**` | 公開（瀏覽評價） |
 | `GET /api/chat-messages/**` | 公開 |
+| `/api/lesson-feedbacks/**` | 公開 |
+| `/uploads/**` | 公開（靜態檔案） |
 | `/ws/**` | 公開（WebSocket 連線） |
 | `/swagger-ui/**`, `/actuator/**` | 公開（開發工具） |
-| `POST/PUT /api/courses/**` | 需 TEACHER 角色 |
+| `POST/PUT/DELETE /api/teacher/**` | 需 TEACHER 角色 |
+| `/test-email/**` | 需 ADMIN 角色 |
 | 其他路徑 | 需登入（任意角色） |
 
 ---
@@ -273,9 +278,14 @@ flowchart LR
 
 | messageType | 說明 |
 |---|---|
-| 1 | 文字訊息 |
-| 2 | 貼圖 |
-| 3+ | 語音 / 圖片 / 影片（透過 `mediaUrl` 傳遞） |
+| 1 | 文字訊息 (TEXT) |
+| 2 | 貼圖 (STICKER) |
+| 3 | 語音 (VOICE) |
+| 4 | 圖片 (IMAGE) |
+| 5 | 影片 (VIDEO) |
+| 6 | 一般檔案 (FILE)（上傳端點依 MIME type 自動偵測） |
+
+媒體類型（2–6）需透過 `mediaUrl` 傳遞檔案連結；文字類型（1）使用 `message` 欄位。
 
 ---
 
@@ -362,7 +372,10 @@ erDiagram
 | `POST` | `/api/bookings` | 預約上課 |
 | `GET/POST` | `/api/reviews` | 課程評價 |
 | `GET/POST` | `/api/feedbacks` | 課後回饋 |
-| `GET/POST` | `/api/chat-messages` | 聊天訊息 |
+| `GET/POST/PUT/DELETE` | `/api/chatMessage` | 聊天訊息（文字） |
+| `POST` | `/api/chatMessage/upload` | 多媒體檔案上傳（multipart） |
+| `POST` | `/api/teacher/feedbacks` | 教師提交課後回饋 |
+| `GET/POST/PUT/DELETE` | `/api/teacher/profile` | 教師個人資料管理 |
 | — | `/ws/**` | WebSocket 視訊 / 即時訊息 |
 | — | `/swagger-ui/index.html` | Swagger API 文件 |
 | — | `/actuator/health` | 健康檢查 |
@@ -380,6 +393,8 @@ spring.jpa.hibernate.ddl-auto=update
 jwt.secret=<your-secret-key>
 jwt.exp-minutes=60
 server.port=8080
+file.upload-dir=./uploads
+file.base-url=http://localhost:8080
 ```
 
 ### 生產環境

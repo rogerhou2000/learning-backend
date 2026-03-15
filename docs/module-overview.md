@@ -46,6 +46,9 @@ com.learning.api
 | [VideoRoomController](../src/main/java/com/learning/api/controller/VideoRoomController.java) | `/app/*` (WS) | WebSocket 即時通訊 |
 | [BookingController](../src/main/java/com/learning/api/controller/BookingController.java) | `/api/bookings` | 預約（委派給 OrderService） |
 | [TeacherController](../src/main/java/com/learning/api/controller/TeacherController.java) | `/api/teacher` | 老師建立課程 |
+| [TutorFeedbackController](../src/main/java/com/learning/api/controller/TutorFeedbackController.java) | `/api/teacher/feedbacks` | 教師端課後回饋提交 |
+| [TestController](../src/main/java/com/learning/api/controller/TestController.java) | `/api/TestController` | 連線測試（開發用） |
+| [TestEmailController](../src/main/java/com/learning/api/controller/TestEmailController.java) | `/test-email` | 寄信測試（ADMIN only） |
 
 ---
 
@@ -68,6 +71,9 @@ com.learning.api
 | [EmailService](../src/main/java/com/learning/api/service/EmailService.java) | 寄送 HTML 格式預約通知、回饋通知 |
 | [BookingService](../src/main/java/com/learning/api/service/BookingService.java) | 輕薄層，將 booking 請求委派給 OrderService |
 | [TeacherCourseService](../src/main/java/com/learning/api/service/TeacherCourseService.java) | 老師建立課程 |
+| [FileStorageService](../src/main/java/com/learning/api/service/FileStorageService.java) | 接受 MultipartFile，UUID 命名後儲存至磁碟，回傳可公開存取的 `/uploads/{uuid}{ext}` URL |
+| [UserService](../src/main/java/com/learning/api/service/UserService.java) | 使用者帳號操作 |
+| [PaymentService](../src/main/java/com/learning/api/service/PaymentService.java) | 付款處理 |
 
 ---
 
@@ -134,7 +140,7 @@ LessonFeedback (課後回饋)
 
 ChatMessage (聊天訊息)
   ├── orderId, role (1=學生, 2=老師)
-  ├── messageType: 1=文字, 2=貼圖, 3=語音, 4=圖片, 5=影片
+  ├── messageType: 1=文字, 2=貼圖, 3=語音, 4=圖片, 5=影片, 6=檔案
   └── message, mediaUrl
 
 WalletLog (錢包交易記錄)
@@ -161,6 +167,8 @@ WalletLog (錢包交易記錄)
 | `ReviewRequest` | 評論請求 |
 | `FeedbackRequest` | 課後回饋請求 |
 | `ChatMessageRequest` | 聊天訊息請求 |
+| `SignalingMessage` | WebRTC 信令（type, senderRole, sdp, candidate, sdpMid, sdpMLineIndex） |
+| `RoomEvent` | 視訊房間事件（type: joined/left, role: 1=學生/2=老師, timestamp: Instant） |
 | `EmailBookingDTO` / `FeedbackEmailDTO` | Email 通知資料 |
 
 ---
@@ -185,6 +193,8 @@ Public (無需登入):
   GET  /api/reviews/**
   GET  /api/feedbacks/**
   /api/auth/**
+  /api/lesson-feedbacks/**
+  /uploads/**
   /ws/**
   /swagger-ui/**
 
@@ -206,6 +216,7 @@ ROLE_ADMIN only:
 |------|------|
 | [WebSocketConfig](../src/main/java/com/learning/api/config/WebSocketConfig.java) | STOMP broker、`/ws` 端點、SockJS 支援 |
 | [MailConfig](../src/main/java/com/learning/api/config/MailConfig.java) | JavaMailSender Bean、寄件人設定 |
+| [WebConfig](../src/main/java/com/learning/api/config/WebConfig.java) | Spring MVC 靜態資源處理，`/uploads/**` 對應至 `${file.upload-dir}` 實體路徑 |
 
 ---
 
@@ -214,7 +225,17 @@ ROLE_ADMIN only:
 | 檔案 | 說明 |
 |------|------|
 | [GlobalExceptionHandler](../src/main/java/com/learning/api/exception/GlobalExceptionHandler.java) | `@RestControllerAdvice`，統一例外 → HTTP 狀態碼對應 |
-| ErrorResponse | 統一錯誤回應格式 `{ status, message, timestamp }` |
+| `ErrorResponse` | 錯誤回應格式 `{ message, timestamp }` |
+
+**例外對應表：**
+
+| 例外類型 | HTTP 狀態碼 | 回應格式 |
+|---------|------------|---------|
+| `NoSuchElementException` | 404 | ErrorResponse |
+| `NoResourceFoundException` | 404 | ErrorResponse |
+| `IllegalArgumentException` | 400 | ErrorResponse |
+| `MethodArgumentNotValidException` | 400 | `Map<field, message>`（扁平格式） |
+| `Exception`（其他） | 500 | ErrorResponse |
 
 ---
 
@@ -230,7 +251,7 @@ ROLE_ADMIN only:
 
 | Enum | 值 | 說明 |
 |------|----|------|
-| `MessageType` | TEXT, STICKER, VOICE, IMAGE, VIDEO | ChatMessage.messageType 對應 |
+| `MessageType` | TEXT(1), STICKER(2), VOICE(3), IMAGE(4), VIDEO(5), FILE(6) | ChatMessage.messageType 對應；FILE 由上傳端點依 MIME type 自動設定 |
 
 ---
 

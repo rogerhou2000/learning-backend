@@ -335,6 +335,7 @@ Base URL: `http://localhost:8080`
 
 **Request Body** — TutorProfileDTO（欄位同 TutorReq）
 **Response 201 Created**
+**Response 409 Conflict** — 該老師個人檔案已存在
 
 ### PUT /api/teacher/profile 🔒 ROLE_TEACHER
 
@@ -467,6 +468,28 @@ Base URL: `http://localhost:8080`
 
 ---
 
+### POST /api/teacher/feedbacks 🔒 ROLE_TEACHER
+
+教師提交課後回饋（`TutorFeedbackController`，直接寫入 `LessonFeedbackRepository`）。
+與 `/api/feedbacks` 為不同端點：前者由教師端提交，後者提供查詢 / 管理。
+
+**Request Body**
+```json
+{
+  "bookingId": 42,
+  "rating": 5,
+  "focusScore": 5,
+  "comprehensionScore": 4,
+  "confidenceScore": 4,
+  "comment": "今天進步很多！"
+}
+```
+
+**Response 200** — `{ "message": "課後回饋送出成功！家長將會收到通知。" }`
+**Response 400** — rating 超出 1–5 範圍，或該 booking 已填寫過回饋
+
+---
+
 ## 聊天訊息 Chat Messages
 
 ### GET /api/chatMessage/booking/{bookingId} 🔓
@@ -478,7 +501,7 @@ Base URL: `http://localhost:8080`
 [
   {
     "id": 1,
-    "orderId": 10,
+    "bookingId": 10,
     "role": 1,
     "messageType": 1,
     "message": "老師好，我今天想練習...",
@@ -488,7 +511,7 @@ Base URL: `http://localhost:8080`
 ]
 ```
 
-`messageType`: 1=文字, 2=貼圖, 3=語音, 4=圖片, 5=影片
+`messageType`: 1=文字, 2=貼圖, 3=語音, 4=圖片, 5=影片, 6=檔案
 `role`: 1=學生, 2=老師
 
 ---
@@ -498,7 +521,7 @@ Base URL: `http://localhost:8080`
 **Request Body**
 ```json
 {
-  "orderId": 10,
+  "bookingId": 10,
   "role": 1,
   "messageType": 1,
   "message": "老師好",
@@ -506,9 +529,33 @@ Base URL: `http://localhost:8080`
 }
 ```
 
-媒體類型（type 2–5）需提供 `mediaUrl`；文字類型需提供 `message`。
+媒體類型（type 2–6）需提供 `mediaUrl`；文字類型（1）需提供 `message`。
 
 **Response 201 Created** — 建立的 ChatMessage 物件
+
+---
+
+### POST /api/chatMessage/upload
+
+上傳多媒體檔案並建立聊天訊息。
+
+**Content-Type:** `multipart/form-data`
+
+| 參數 | 類型 | 說明 |
+|------|------|------|
+| `file` | MultipartFile | 上傳的檔案（必填） |
+| `bookingId` | Long | 所屬 booking（必填） |
+| `role` | Integer | 發送角色：1=學生, 2=老師（必填） |
+
+依 MIME type 自動偵測 `messageType`：
+- `image/*` → 4 (IMAGE)
+- `video/*` → 5 (VIDEO)
+- `audio/*` → 3 (VOICE)
+- 其他 → 6 (FILE)
+
+**Response 201 Created** — 儲存後的 ChatMessage（`mediaUrl` 設為檔案存取 URL）
+**Response 400** — file 為空
+**Response 500** — 檔案儲存失敗
 
 ---
 
@@ -552,28 +599,59 @@ Base URL: `http://localhost:8080`
 | `/app/chat/{bookingId}`       | 傳送聊天訊息        |
 | `/app/event/{bookingId}`      | 傳送房間事件        |
 
+### 訊息格式
+
+**SignalingMessage**（傳送至 `/app/signal/{bookingId}`，轉發至 `/topic/room/{id}/signal`，不持久化）
+```json
+{
+  "type": "offer | answer | candidate",
+  "senderRole": 1,
+  "sdp": "v=0...",
+  "candidate": "candidate:...",
+  "sdpMid": "0",
+  "sdpMLineIndex": 0
+}
+```
+`sdp` 用於 offer/answer；`candidate`/`sdpMid`/`sdpMLineIndex` 用於 ICE candidate。
+
+**RoomEvent**（傳送至 `/app/event/{bookingId}`，轉發至 `/topic/room/{id}/events`，不持久化）
+```json
+{
+  "type": "joined | left",
+  "role": 1,
+  "timestamp": "2026-03-15T08:00:00Z"
+}
+```
+`role`: 1=學生, 2=老師。`timestamp` 預設為伺服器端 `Instant.now()`。
+
 ---
 
 ## 錯誤回應格式
 
-所有錯誤皆回傳統一格式：
+各例外類型與對應 HTTP 狀態碼：
+
+| 例外類型 | HTTP 狀態碼 | 說明 |
+|---------|------------|------|
+| `NoSuchElementException` | 404 | 資源不存在 |
+| `NoResourceFoundException` | 404 | Spring MVC 找不到靜態資源 |
+| `IllegalArgumentException` | 400 | 業務邏輯驗證失敗 |
+| `MethodArgumentNotValidException` | 400 | Bean Validation 驗證失敗 |
+| `Exception`（其他） | 500 | 伺服器錯誤 |
+
+大多數錯誤回傳 `ErrorResponse` 格式：
 
 ```json
 {
-  "status": 400,
   "message": "具體錯誤說明",
   "timestamp": "2026-03-14T09:00:00Z"
 }
 ```
 
-驗證錯誤（400）額外包含 `errors` 陣列：
+`MethodArgumentNotValidException`（Bean Validation 失敗）回傳扁平 Map：
 
 ```json
 {
-  "status": 400,
-  "message": "Validation failed",
-  "errors": [
-    { "field": "email", "message": "must not be blank" }
-  ]
+  "email": "must not be blank",
+  "password": "size must be between 6 and 100"
 }
 ```
