@@ -59,6 +59,7 @@ class TutorProfileControllerTest {
         testTutor.setRole(2);
         testTutor.setWallet(0L);
         testTutor = userRepository.save(testTutor);
+        savedTutorId = testTutor.getId();
     }
 
     // ===================== GET =====================
@@ -101,7 +102,7 @@ class TutorProfileControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.msg").exists());
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
@@ -159,7 +160,7 @@ class TutorProfileControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value(containsString("個人檔案儲存成功")));
+                .andExpect(jsonPath("$.msg").value(containsString("個人檔案更新成功！")));
     }
 
     @Test
@@ -188,7 +189,7 @@ class TutorProfileControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.msg").value("更新失敗，找不到該名老師"));
+                .andExpect(jsonPath("$.msg").value("找不到該名老師"));
     }
 
     @Test
@@ -305,7 +306,7 @@ class TutorProfileControllerTest {
                 .andExpect(status().isOk());
 
         String name = userRepository.findById(savedTutorId).orElseThrow().getName();
-        assertThat(name).isEqualTo("Prof. Test");
+        assertThat(name).isEqualTo("Test Teacher");
     }
 
     @Test

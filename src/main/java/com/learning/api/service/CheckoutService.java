@@ -59,6 +59,7 @@ public class CheckoutService {
         order.setUserId(student.getId());
         order.setCourseId(course.getId());
         order.setUnitPrice(course.getPrice());
+        order.setDiscountPrice(totalPrice);
         order.setLessonCount(totalSlots);
         order.setLessonUsed(totalSlots); // 因為是直接買時段，所以直接標記為已使用
         order.setStatus(2); // 2:成交

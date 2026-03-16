@@ -37,5 +37,6 @@ public class Course {
     private Integer price;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean Active;
+    private Boolean active;
+    /* private Boolean Active; */
 }

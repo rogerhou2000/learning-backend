@@ -101,6 +101,7 @@ CREATE TABLE `orders` (
   `discount_price` int(11) NOT NULL COMMENT '折扣價',
   `lesson_count` int(11) NOT NULL COMMENT '購買堂數',
   `lesson_used` int(11) NOT NULL DEFAULT '0' COMMENT '已使用堂數',
+  `is_experienced` tinyint(1) DEFAULT NULL COMMENT '是否為體驗課 1為體驗課 預設 null',
   `status` tinyint(4) NOT NULL COMMENT '1=pending 2=deal 3=complete'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -150,7 +151,8 @@ CREATE TABLE `tutor_schedules` (
   `id` bigint(20) NOT NULL,
   `tutor_id` bigint(20) NOT NULL,
   `weekday` tinyint(4) NOT NULL COMMENT '1=星期一 ... 7=星期日',
-  `hour` tinyint(4) NOT NULL COMMENT '上課小時(9~21)'
+  `hour` tinyint(4) NOT NULL COMMENT '上課小時(9~21)',
+  `status` varchar(20) NOT NULL DEFAULT 'available' COMMENT 'available=開放 inactive=暫停'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
