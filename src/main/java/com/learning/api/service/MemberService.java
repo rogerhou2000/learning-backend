@@ -1,6 +1,8 @@
 package com.learning.api.service;
 
 import com.learning.api.dto.auth.*;
+import com.learning.api.dto.auth.LoginResp;
+import com.learning.api.dto.auth.LoginReq;
 import com.learning.api.entity.*;
 import com.learning.api.repo.*;
 import com.learning.api.security.JwtService;
@@ -22,10 +24,6 @@ public class MemberService {
 
         if (memberRepo.existsByEmail(email)) throw new IllegalArgumentException("此 email 已被註冊");
 
-<<<<<<< HEAD
-        String hashPassword = BCrypt.hashpw(registerReq.getPassword().trim(), BCrypt.gensalt());
-        memberRepo.save(buildMember(registerReq, email, hashPassword));
-=======
         // password
         String rawPassword = registerReq.getPassword();
         // String password = rawPassword.trim();
@@ -33,7 +31,6 @@ public class MemberService {
 
         User user = buildMember(registerReq, email, hashPassword);
         memberRepo.save(user);
->>>>>>> upstream/feature/auth
     }
 
     public LoginResp login(LoginReq loginReq) {
@@ -77,7 +74,7 @@ public class MemberService {
     }
 
     // login
-    public LoginResp login(LoginReq loginReq) {
+/*     public LoginResp login(LoginReq loginReq) {
         String rawEmail = loginReq.getEmail().trim().toLowerCase();
         //String rawPassword = loginReq.getPassword().trim();
         String rawPassword = loginReq.getPassword();
@@ -104,5 +101,5 @@ public class MemberService {
 
 
         return new LoginResp(token);
-    }
+    } */
 }

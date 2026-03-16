@@ -1,9 +1,9 @@
 package com.learning.api.security;
 
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,8 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.util.List;
 
 @EnableWebSecurity
 @Configuration
@@ -35,38 +33,33 @@ public class SecurityConfig {
                         auth -> auth
                                 // 不需要登入
                                 .requestMatchers("/api/auth/**").permitAll()
-                                // 以上沒有的都要登入
+
+                                // 公開資源（GET only）
+                                .requestMatchers(HttpMethod.GET, "/api/teacher/**").permitAll()      // 家教公開個人資料
+                                // 老師寫入操作需要 TEACHER 角色
+                                .requestMatchers(HttpMethod.POST, "/api/teacher/**").hasRole("TEACHER")
+                                .requestMatchers(HttpMethod.PUT, "/api/teacher/**").hasRole("TEACHER")
+                                .requestMatchers(HttpMethod.DELETE, "/api/teacher/**").hasRole("TEACHER")
+                                .requestMatchers("/api/reviews/**").permitAll()
+                                .requestMatchers("/api/chat-messages/**").permitAll()
+                                .requestMatchers("/api/lesson-feedbacks/**").permitAll()
+
+                                // WebSocket (SockJS handshake + STOMP)
+                                .requestMatchers("/ws/**").permitAll()
+
+                                // 上傳檔案靜態資源
+                                .requestMatchers("/uploads/**").permitAll()
+
+                                // 靜態頁面 / 測試用
+                                .requestMatchers("/*.html").permitAll()
+                                .requestMatchers("/favicon.ico").permitAll()
+                                .requestMatchers("/test-email/**").hasRole("ADMIN")
+
+                                // Swagger / Actuator（開發階段）
+                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
+
+                                // 其餘請求需登入
                                 .anyRequest().authenticated()
-                )
-                // 檢查 token
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
-                        // 公開資源（GET only）
-                        .requestMatchers(HttpMethod.GET, "/api/teacher/**").permitAll()      // 家教公開個人資料
-                        // 老師寫入操作需要 TEACHER 角色
-                        .requestMatchers(HttpMethod.POST, "/api/teacher/**").hasRole("TEACHER")
-                        .requestMatchers(HttpMethod.PUT, "/api/teacher/**").hasRole("TEACHER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/teacher/**").hasRole("TEACHER")
-                        .requestMatchers("/api/reviews/**").permitAll()
-                        .requestMatchers("/api/chat-messages/**").permitAll()
-                        .requestMatchers("/api/lesson-feedbacks/**").permitAll()
-
-                        // WebSocket (SockJS handshake + STOMP)
-                        .requestMatchers("/ws/**").permitAll()
-
-                        // 上傳檔案靜態資源
-                        .requestMatchers("/uploads/**").permitAll()
-
-                        // 靜態頁面 / 測試用
-                        .requestMatchers("/*.html").permitAll()
-                        .requestMatchers("/favicon.ico").permitAll()
-                        .requestMatchers("/test-email/**").hasRole("ADMIN")
-
-                        // Swagger / Actuator（開發階段）
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
-
-                        // 其餘請求需登入
-                        .anyRequest().authenticated()
                 )
 
                 .exceptionHandling(ex -> ex
@@ -85,7 +78,7 @@ public class SecurityConfig {
                 // JWT filter 在 Spring Security 的 UsernamePasswordAuthenticationFilter 之前執行
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
+        return httpSecurity.build();
     }
 
     @Bean
