@@ -37,6 +37,7 @@ build/
 .vscode/
 *.code-workspace
 *.md
+.github\skills
 
 # Sensitive settings and passwords
 src/main/resources/application.properties
