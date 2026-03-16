@@ -1,4 +1,4 @@
-package com.learning.api.service;
+/* package com.learning.api.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,9 +8,9 @@ import com.learning.api.repo.ChatMessageRepository;
 import com.learning.api.repo.OrderRepo;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.Optional; */
 
-@Service
+/* @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
 
@@ -62,4 +62,4 @@ public class ChatMessageService {
         }
         return false;
     }
-}
+} */

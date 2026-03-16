@@ -31,9 +31,5 @@ public class ChatMessage {
     private String mediaUrl;
 
     @Column(name = "created_at", insertable = false, updatable = false)
-<<<<<<< HEAD
     private Instant createdAt;
-=======
-    private LocalDateTime createdAt;
->>>>>>> f47e1b897c900c8e5b8ca678447f269db3e2c218
 }

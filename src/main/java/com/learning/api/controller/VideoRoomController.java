@@ -6,7 +6,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import com.learning.api.dto.ChatMessageRequest;
+/* import com.learning.api.dto.ChatMessageRequest;
 import com.learning.api.dto.RoomEvent;
 import com.learning.api.dto.SignalingMessage;
 import com.learning.api.entity.ChatMessage;
@@ -51,3 +51,4 @@ public class VideoRoomController {
             "/topic/room/" + bookingId + "/events", event);
     }
 }
+ */
