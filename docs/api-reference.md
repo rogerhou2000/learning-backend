@@ -6,6 +6,282 @@ Base URL: `http://localhost:8080`
 
 ---
 
+## 前端串接指南
+
+本節提供 Vite + Axios 前端專案的完整串接範例。後端 CORS 已開放 `http://localhost:5173`。
+
+### 安裝套件
+
+```bash
+npm install axios sockjs-client @stomp/stompjs
+```
+
+### 環境變數（`.env`）
+
+```
+VITE_API_URL=http://localhost:8080
+```
+
+---
+
+### Axios 實例封裝（`src/api/axiosInstance.js`）
+
+建立統一的 axios instance，自動附加 JWT token，並處理 401 自動登出。
+
+```js
+import axios from 'axios'
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+})
+
+// 每次請求自動帶入 Bearer token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+// 401 → 清除登入狀態並導回登入頁
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+export default api
+```
+
+---
+
+### 認證流程
+
+**登入**
+
+```js
+import api from './axiosInstance'
+
+async function login(email, password) {
+  const { data } = await api.post('/api/auth/login', { email, password })
+  localStorage.setItem('token', data.token)
+  localStorage.setItem('user', JSON.stringify(data.user))
+  return data.user // { id, name, email, role, wallet }
+}
+```
+
+**登出**
+
+```js
+function logout() {
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  window.location.href = '/login'
+}
+```
+
+**取得目前登入使用者**
+
+```js
+function getCurrentUser() {
+  const raw = localStorage.getItem('user')
+  return raw ? JSON.parse(raw) : null
+}
+```
+
+---
+
+### 常見 API 呼叫範例
+
+**取得所有課程（🔓 無需登入）**
+
+```js
+async function getCourses() {
+  const { data } = await api.get('/api/courses')
+  return data // CourseResp[]
+}
+```
+
+**購買課程**
+
+```js
+async function purchaseCourse(studentId, courseId, selectedSlots) {
+  // selectedSlots: [{ date: '2026-03-20', hour: 14 }, ...]
+  const { data } = await api.post('/api/shop/purchase', {
+    studentId,
+    courseId,
+    selectedSlots,
+  })
+  return data // { message: 'purchase success' }
+}
+```
+
+> 餘額不足時後端回傳 `{ message: 'insufficient balance', actionCode: 'TOP_UP' }`，前端可依 `actionCode` 引導使用者前往儲值頁面。
+
+**提交課程評論**
+
+```js
+async function submitReview(userId, courseId, scores, comment) {
+  const { data } = await api.post('/api/reviews', {
+    userId,
+    courseId,
+    focusScore: scores.focus,         // 1–5
+    comprehensionScore: scores.comprehension,
+    confidenceScore: scores.confidence,
+    comment,                           // 可為 null
+  })
+  return data
+}
+```
+
+**取得使用者訂單列表**
+
+```js
+async function getUserOrders(userId) {
+  const { data } = await api.get(`/api/orders/user/${userId}`)
+  return data // Order[]，status: 1=待付款, 2=已成立, 3=已完成
+}
+```
+
+---
+
+### 檔案上傳（聊天室多媒體）
+
+上傳時使用 `FormData`，**不要**手動設定 `Content-Type`（讓瀏覽器自動填入 boundary）。
+
+```js
+async function uploadChatFile(file, bookingId, role) {
+  const form = new FormData()
+  form.append('file', file)
+  form.append('bookingId', bookingId)
+  form.append('role', role) // 1=學生, 2=老師
+
+  const { data } = await api.post('/api/chatMessage/upload', form)
+  return data // ChatMessage（含 mediaUrl）
+}
+```
+
+後端依 MIME type 自動判斷 `messageType`：圖片→4、影片→5、語音→3、其他→6。
+
+---
+
+### WebSocket 串接（聊天室 & 視訊）
+
+使用 SockJS + STOMP 連線，適用於課堂聊天與 WebRTC 訊號交換。
+
+```js
+import SockJS from 'sockjs-client'
+import { Client } from '@stomp/stompjs'
+
+function createRoomClient(bookingId, onMessage) {
+  const client = new Client({
+    webSocketFactory: () => new SockJS(`${import.meta.env.VITE_API_URL}/ws`),
+    onConnect: () => {
+      // 訂閱即時聊天
+      client.subscribe(`/topic/room/${bookingId}/chat`, (frame) => {
+        const msg = JSON.parse(frame.body)
+        onMessage(msg)
+      })
+
+      // 訂閱房間事件（加入/離開）
+      client.subscribe(`/topic/room/${bookingId}/events`, (frame) => {
+        const event = JSON.parse(frame.body)
+        console.log('Room event:', event) // { type: 'joined'|'left', role, timestamp }
+      })
+    },
+  })
+
+  client.activate()
+  return client
+}
+
+// 發送聊天訊息
+function sendChatMessage(client, bookingId, role, message) {
+  client.publish({
+    destination: `/app/chat/${bookingId}`,
+    body: JSON.stringify({ role, messageType: 1, message }),
+  })
+}
+
+// 離開時斷線
+function leaveRoom(client) {
+  client.deactivate()
+}
+```
+
+**WebRTC 訊號（offer / answer / ICE candidate）**
+
+```js
+// 傳送 SDP offer
+function sendOffer(client, bookingId, senderRole, sdp) {
+  client.publish({
+    destination: `/app/signal/${bookingId}`,
+    body: JSON.stringify({ type: 'offer', senderRole, sdp }),
+  })
+}
+
+// 訂閱訊號（在 onConnect 中加入）
+client.subscribe(`/topic/room/${bookingId}/signal`, (frame) => {
+  const signal = JSON.parse(frame.body)
+  // signal.type: 'offer' | 'answer' | 'candidate'
+  handleSignal(signal)
+})
+```
+
+---
+
+### 錯誤處理
+
+後端回傳三種錯誤格式，建議統一在 axios interceptor 或各呼叫點處理：
+
+```js
+async function apiCall() {
+  try {
+    const { data } = await api.post('/api/shop/purchase', payload)
+    return data
+  } catch (error) {
+    const res = error.response
+
+    if (!res) {
+      // 網路錯誤
+      alert('無法連線至伺服器')
+      return
+    }
+
+    if (res.status === 400) {
+      // 一般業務錯誤：{ message, timestamp }
+      // 購買失敗特例：{ message, actionCode }
+      const { message, actionCode } = res.data
+      if (actionCode === 'TOP_UP') {
+        // 導向儲值頁面
+        window.location.href = '/wallet/topup'
+      } else {
+        alert(message)
+      }
+    } else if (res.status === 422 || (res.status === 400 && typeof res.data === 'object' && !res.data.message)) {
+      // Bean Validation 失敗：扁平 Map { email: '...', password: '...' }
+      const errors = Object.entries(res.data)
+        .map(([field, msg]) => `${field}: ${msg}`)
+        .join('\n')
+      alert(errors)
+    } else if (res.status === 404) {
+      alert('找不到資源')
+    } else {
+      alert('伺服器發生錯誤，請稍後再試')
+    }
+  }
+}
+```
+
+---
+
 ## 認證 Auth
 
 ### POST /api/auth/register 🔓
