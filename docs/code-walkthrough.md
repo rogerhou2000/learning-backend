@@ -39,11 +39,11 @@ HTTP Request
   │
   ▼
 [AuthController.login()]
-  └── MemberService.login(LoginReq)
-        ├── memberRepo.findByEmail()   → 查詢資料庫
-        ├── BCrypt.checkpw()           → 比對密碼雜湊
-        ├── JwtService.generateToken() → 產生 JWT
-        └── 回傳 LoginResp { token, UserResp }
+  └── AuthService.loginReq(LoginReq)
+        ├── memberRepo.findByEmail()        → 查詢資料庫
+        ├── passwordEncoder.matches()       → 比對密碼雜湊（BCrypt）
+        ├── JwtService.generateToken(user)  → 產生 JWT
+        └── 回傳 LoginResp { token }
   │
   ▼
 HTTP Response 200 OK
@@ -52,7 +52,8 @@ HTTP Response 200 OK
 **關鍵檔案：**
 - [JwtFilter.java](../src/main/java/com/learning/api/security/JwtFilter.java)
 - [AuthController.java](../src/main/java/com/learning/api/controller/AuthController.java)
-- [MemberService.java](../src/main/java/com/learning/api/service/MemberService.java)
+- [AuthService.java](../src/main/java/com/learning/api/service/AuthService.java)（登入）
+- [MemberService.java](../src/main/java/com/learning/api/service/MemberService.java)（註冊）
 
 ---
 
@@ -61,7 +62,7 @@ HTTP Response 200 OK
 ```
 登入成功
   └── JwtService.generateToken(User)
-        ├── Claims: sub=userId, email, role, iat, exp
+        ├── Claims: sub=email, userId, role, iat, exp
         ├── 簽章算法: HMAC-SHA (secret 來自 ${jwt.secret})
         └── 有效期: ${jwt.exp-minutes}（預設 24 小時）
 

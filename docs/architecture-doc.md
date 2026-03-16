@@ -43,9 +43,12 @@ src/main/java/com/learning/api/
 ├── exception/           # 全域例外處理
 ├── repo/                # Spring Data JPA Repository
 ├── security/            # JWT 與安全元件
-│   ├── JwtService        # Token 產生 / 解析 / 驗證
-│   └── JwtFilter         # HTTP 請求攔截與驗證
-└── service/             # 商業邏輯層（15 個服務）
+│   ├── JwtService              # Token 產生 / 解析 / 驗證
+│   ├── JwtFilter               # HTTP 請求攔截與驗證
+│   ├── SecurityConfig          # Spring Security 過濾鏈、路由授權規則
+│   ├── CustomUserDetailsService# 載入 UserDetails（email 查詢）
+│   └── SecurityUser            # UserDetails 實作，role int → ROLE_* 字串
+└── service/             # 商業邏輯層（17 個服務）
 ```
 
 ---
@@ -72,7 +75,7 @@ src/main/java/com/learning/api/
 | 控制器 | 路徑前綴 | 功能 |
 |---|---|---|
 | `AuthController` | `/api/auth` | 註冊、登入（產生 JWT） |
-| `UserController` | `/api/users` | 使用者帳號管理 |
+| `TutorController` | `/api/tutor` | 老師（Tutor）資料 CRUD |
 | `CourseController` | `/api/courses` | 課程 CRUD |
 | `OrderController` | `/api/orders` | 訂單建立 / 修改 / 查詢 / 支付 / 取消 |
 | `BookingController` | `/api/bookings` | 預約排課管理 |
@@ -80,18 +83,18 @@ src/main/java/com/learning/api/
 | `FeedbackController` | `/api/feedbacks` | 課後回饋 CRUD |
 | `ChatMessageController` | `/api/chatMessage` | 聊天訊息（含多媒體） |
 | `TeacherController` | `/api/teacher` | 教師課程建立（公開） |
-| `TutorController` | `/api/tutors` | 教師查詢 |
+| `CheckoutController` | `/api/shop` | 結帳作業（購買並預約） |
 | `TutorProfileController` | `/api/teacher/profile` | 教師個人資料更新 |
 | `TutorScheduleController` | `/api/teacher/schedules` | 教師排課時段管理 |
 | `TutorFeedbackController` | `/api/teacher/feedbacks` | 教師發送課後回饋 |
-| `CheckoutController` | `/api/shop` | 結帳作業 |
 | `VideoRoomController` | `/ws` | WebSocket 視訊聊天（WebRTC 信令、即時訊息） |
 
 ### 3.3 服務層 (Service)
 
 | 服務 | 職責 |
 |---|---|
-| `MemberService` | 會員註冊（密碼加密）、登入驗證、JWT 產生 |
+| `AuthService` | 登入驗證（密碼比對）、JWT 產生 |
+| `MemberService` | 會員註冊（email 正規化、BCrypt 密碼雜湊、儲存 User） |
 | `UserService` | 使用者帳號操作 |
 | `CourseService` | 課程 CRUD、依教師篩選、啟用狀態管理 |
 | `OrderService` | 訂單全生命週期（建立→付款→完成→取消） |
@@ -123,7 +126,7 @@ graph TB
         Filter["JwtFilter<br/>（認證攔截）"]
         Security["SecurityConfig<br/>（路由權限設定）"]
         Controllers["Controller Layer<br/>（16 個 REST 控制器）"]
-        Services["Service Layer<br/>（15 個商業邏輯服務）"]
+        Services["Service Layer<br/>（17 個商業邏輯服務）"]
         Repos["Repository Layer<br/>（11 個 JPA Repository）"]
         WS["WebSocket / STOMP<br/>（視訊 + 即時訊息）"]
     end
@@ -149,6 +152,7 @@ sequenceDiagram
     actor User as 使用者
     participant Auth as AuthController
     participant Member as MemberService
+    participant AuthSvc as AuthService
     participant JWT as JwtService
     participant DB as MySQL
 
@@ -157,17 +161,17 @@ sequenceDiagram
     Member->>DB: 儲存使用者（密碼 BCrypt 加密）
     DB-->>Member: 成功
     Member-->>Auth: 完成
-    Auth-->>User: 200 註冊成功
+    Auth-->>User: 200 { msg: "註冊成功" }
 
     User->>Auth: POST /api/auth/login
-    Auth->>Member: login(LoginReq)
-    Member->>DB: 查詢使用者 by email
-    DB-->>Member: User entity
-    Member->>Member: 驗證密碼 (BCrypt)
-    Member->>JWT: generateToken(user)
-    JWT-->>Member: JWT Token
-    Member-->>Auth: LoginResp (token + user info)
-    Auth-->>User: 200 { token, user }
+    Auth->>AuthSvc: loginReq(LoginReq)
+    AuthSvc->>DB: 查詢使用者 by email
+    DB-->>AuthSvc: User entity
+    AuthSvc->>AuthSvc: 驗證密碼 (BCrypt)
+    AuthSvc->>JWT: generateToken(user)
+    JWT-->>AuthSvc: JWT Token
+    AuthSvc-->>Auth: LoginResp { token }
+    Auth-->>User: 200 { token }
 ```
 
 ### 4.3 訂單與預約流程
@@ -222,8 +226,8 @@ flowchart TD
 
 | 欄位 | 值 | 說明 |
 |---|---|---|
-| `sub` | User ID | 使用者唯一識別碼 |
-| `email` | 使用者 email | 帳號識別 |
+| `sub` | 使用者 email | 帳號識別（JwtService 以 email 作為 subject） |
+| `userId` | User ID | 使用者唯一識別碼（Claim） |
 | `role` | 1 / 2 / 3 | 1=學生、2=教師、3=管理員 |
 | `iat` | 發放時間 | Token 建立時間 |
 | `exp` | 過期時間 | 由 `jwt.exp-minutes` 設定 |
@@ -417,4 +421,4 @@ java -jar target/api-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
 
 ---
 
-*本文件由程式碼分析自動產出，反映 `feature/Review` 分支截至 2026-03-14 的架構現況。*
+*本文件由程式碼分析自動產出，反映 `feature/Review` 分支截至 2026-03-16 的架構現況。*

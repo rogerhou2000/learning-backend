@@ -15,21 +15,55 @@
 
 ---
 
-## 測試文件一覽
+## Controller 測試文件一覽
 
 | 測試檔案 | 測試類型 | 測試數量 | 規格文件 |
 |---|---|---|---|
+| `AuthControllerTest` | 整合測試 | 8 | [SPEC_Tests_AuthController.md](./SPEC_Tests_AuthController.md) |
 | `BookingControllerTest` | 整合測試 | 9 | [SPEC_Tests_BookingController.md](./SPEC_Tests_BookingController.md) |
 | `ChatMessageControllerTest` | 整合測試 | 21 | [SPEC_Tests_ChatMessageController.md](./SPEC_Tests_ChatMessageController.md) |
+| `CheckoutControllerTest` | 整合測試 | 4 | [SPEC_Tests_CheckoutController.md](./SPEC_Tests_CheckoutController.md) |
+| `CourseControllerTest` | 整合測試 | 18 | [SPEC_Tests_CourseController.md](./SPEC_Tests_CourseController.md) |
 | `LessonFeedbackControllerTest` | 整合測試 | 18 | [SPEC_Tests_FeedbackController.md](./SPEC_Tests_FeedbackController.md) |
 | `OrderControllerTest` | 整合測試 | 20 | [SPEC_Tests_OrderController.md](./SPEC_Tests_OrderController.md) |
 | `ReviewControlTest` | 整合測試 | 15 | [SPEC_Tests_ReviewController.md](./SPEC_Tests_ReviewController.md) |
-| `VideoRoomControllerTest` | 單元測試（Mockito） | 17 | [SPEC_Tests_VideoRoomController.md](./SPEC_Tests_VideoRoomController.md) |
+| `TeacherControllerTest` | 整合測試 | 4 | [SPEC_Tests_TeacherController.md](./SPEC_Tests_TeacherController.md) |
+| `TutorControllerTest` | 整合測試 | 9 | [SPEC_Tests_TutorController.md](./SPEC_Tests_TutorController.md) |
+| `TutorFeedbackControllerTest` | 整合測試 | 4 | [SPEC_Tests_TutorFeedbackController.md](./SPEC_Tests_TutorFeedbackController.md) |
 | `TutorProfileControllerTest` | 整合測試 | 17 | [SPEC_Tests_TutorProfileController.md](./SPEC_Tests_TutorProfileController.md) |
-| `CourseControllerTest` | 整合測試 | 18 | [SPEC_Tests_CourseController.md](./SPEC_Tests_CourseController.md) |
+| `TutorScheduleControllerTest` | 整合測試 | 6 | [SPEC_Tests_TutorScheduleController.md](./SPEC_Tests_TutorScheduleController.md) |
+| `VideoRoomControllerTest` | 單元測試（Mockito） | 17 | [SPEC_Tests_VideoRoomController.md](./SPEC_Tests_VideoRoomController.md) |
+
+**Controller 測試小計：170 個測試方法**
+
+---
+
+## Service 測試文件一覽
+
+| 測試檔案 | 測試類型 | 測試數量 | 規格文件 |
+|---|---|---|---|
+| `AuthServiceTest` | 整合測試 | 3 | [SPEC_Tests_AuthService.md](./SPEC_Tests_AuthService.md) |
+| `CheckoutServiceTest` | 整合測試 | 5 | [SPEC_Tests_CheckoutService.md](./SPEC_Tests_CheckoutService.md) |
+| `CourseServiceTest` | 整合測試 | 9 | [SPEC_Tests_CourseService.md](./SPEC_Tests_CourseService.md) |
+| `MemberServiceTest` | 整合測試 | 4 | [SPEC_Tests_MemberService.md](./SPEC_Tests_MemberService.md) |
+| `OrderServiceTest` | 整合測試 | 11 | [SPEC_Tests_OrderService.md](./SPEC_Tests_OrderService.md) |
+| `TeacherCourseServiceTest` | 整合測試 | 5 | [SPEC_Tests_TeacherCourseService.md](./SPEC_Tests_TeacherCourseService.md) |
+| `TutorScheduleServiceTest` | 整合測試 | 5 | [SPEC_Tests_TutorScheduleService.md](./SPEC_Tests_TutorScheduleService.md) |
+| `TutorServiceTest` | 整合測試 | 9 | [SPEC_Tests_TutorService.md](./SPEC_Tests_TutorService.md) |
+
+**Service 測試小計：51 個測試方法**
+
+---
+
+## 其他
+
+| 測試檔案 | 測試類型 | 測試數量 | 說明 |
+|---|---|---|---|
 | `ApiApplicationTests` | Context 載入測試 | 1 | 見下方說明 |
 
-**總計：136 個測試方法**
+---
+
+**總計：222 個測試方法**
 
 ---
 
@@ -69,6 +103,7 @@ User → Course → Order → Booking → 主要測試實體
 | DELETE（成功） | `204 No Content` | 刪除成功，無 body |
 | 資源不存在 | `404 Not Found` | ID 查無對應資源 |
 | 驗證失敗 | `400 Bad Request` | 必填欄位缺失或格式不合法 |
+| 餘額不足 | `402 Payment Required` | 結帳時學生錢包餘額不足 |
 
 ---
 

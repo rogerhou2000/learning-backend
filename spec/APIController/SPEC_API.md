@@ -8,7 +8,7 @@ Base URL: `http://localhost:8080`
 
 | Controller | Base Path | 說明 | 規格文件 |
 |---|---|---|---|
-| `UserController` | `/api/auth` | 會員註冊 / 登入 | [SPEC_UserController.md](./SPEC_UserController.md) |
+| `AuthController` | `/api/auth` | 會員註冊 / 登入 | [SPEC_AuthController.md](./SPEC_UserController.md) |
 | `BookingController` | `/api/bookings` | 課程預約建立 | [SPEC_BookingController.md](./SPEC_BookingController.md) |
 | `CourseController` | `/api/courses` | 課程完整 CRUD（含老師課程查詢） | [SPEC_CourseController.md](./SPEC_CourseController.md) |
 | `OrderController` | `/api/orders` | 訂單管理（建立、查詢、更新、取消、支付） | [SPEC_OrderController.md](./SPEC_OrderController.md) |
@@ -20,8 +20,8 @@ Base URL: `http://localhost:8080`
 | `TutorScheduleController` | `/api/teacher/schedules` | 老師排班管理 | [SPEC_TeacherController.md](./SPEC_TeacherController.md) |
 | `TutorFeedbackController` | `/api/teacher/feedbacks` | 老師送出課後回饋 | [SPEC_TeacherController.md](./SPEC_TeacherController.md) |
 | `VideoRoomController` | WebSocket `/ws` | 視訊聊天室（WebRTC 信令 / 即時聊天 / 房間事件） | [SPEC_VideoRoomController.md](./SPEC_VideoRoomController.md) |
-| `TutorController` | `/api/tutor` | 老師（Tutor）資料 CRUD | — |
-| `CheckoutController` | `/api/shop` | 購買並預約課程 | — |
+| `TutorController` | `/api/tutor` | 老師（Tutor）資料 CRUD | [SPEC_TutorController.md](./SPEC_TutorController.md) |
+| `CheckoutController` | `/api/shop` | 購買並預約課程 | [SPEC_CheckoutController.md](./SPEC_CheckoutController.md) |
 
 ---
 
@@ -58,6 +58,7 @@ Base URL: `http://localhost:8080`
 | 3 | VOICE | true | 語音 |
 | 4 | IMAGE | true | 圖片 |
 | 5 | VIDEO | true | 影片 |
+| 6 | FILE | true | 一般檔案（上傳端點依 MIME type 自動偵測） |
 
 ---
 

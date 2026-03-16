@@ -58,7 +58,8 @@ com.learning.api
 
 | 檔案 | 職責 |
 |------|------|
-| [MemberService](../src/main/java/com/learning/api/service/MemberService.java) | 使用者註冊（BCrypt 雜湊）、登入驗證、JWT 產生 |
+| [AuthService](../src/main/java/com/learning/api/service/AuthService.java) | 登入驗證（BCrypt 密碼比對）、JWT 產生 |
+| [MemberService](../src/main/java/com/learning/api/service/MemberService.java) | 使用者註冊（email 正規化、BCrypt 雜湊、儲存 User） |
 | [CheckoutService](../src/main/java/com/learning/api/service/CheckoutService.java) | 購課原子交易：驗證餘額 → 驗證時段 → 建立 Order/Bookings → 扣款 |
 | [OrderService](../src/main/java/com/learning/api/service/OrderService.java) | 訂單 CRUD、95 折邏輯、付款、取消 |
 | [CourseService](../src/main/java/com/learning/api/service/CourseService.java) | 課程 CRUD、批次查詢防 N+1 |
@@ -83,16 +84,17 @@ com.learning.api
 
 | Repository | 對應 Entity | 重要自訂查詢 |
 |------------|-------------|-------------|
-| MemberRepo | User | `findByEmail()` |
-| CourseRepo | Course | `findByTutorId()`, `findByTutorIdAndActiveTrue()` |
-| BookingsRepo | Bookings | `findByTutorIdAndDateAndHour()` — 衝突偵測 |
-| OrderRepo | Order | `findByUserId()` |
-| TutorRepo | Tutor | — |
-| TutorScheduleRepo | TutorSchedule | `findByTutorId()`, `findByTutorIdAndWeekdayAndHour()` |
-| ReviewRepo | Reviews | `findByUserId()`, `findByCourseId()` |
-| LessonFeedbackRepo | LessonFeedback | `findByBookingId()` |
-| ChatMessageRepo | ChatMessage | `findByOrderId()` |
-| WalletLogRepo | WalletLog | — |
+| `MemberRepo` | User | `findByEmail()`, `existsByEmail()` |
+| `UserRepository` | User | `findById()` — 通用使用者查詢 |
+| `CourseRepo` | Course | `findByTutorId()`, `findByTutorIdAndActiveTrue()` |
+| `BookingRepository` | Bookings | `findByTutorIdAndDateAndHour()` — 衝突偵測 |
+| `OrderRepository` | Order | `findByUserId()` |
+| `TutorRepository` | Tutor | — |
+| `TutorScheduleRepo` | TutorSchedule | `findByTutorId()`, `findByTutorIdAndWeekdayAndHour()` |
+| `ReviewRepository` | Reviews | `findByUserId()`, `findByCourseId()` |
+| `LessonFeedbackRepository` | LessonFeedback | `findByBookingId()`, `existsByBookingId()` |
+| `ChatMessageRepository` | ChatMessage | `findByOrderId()` |
+| `WalletLogRepository` | WalletLog | — |
 
 ---
 
@@ -179,9 +181,10 @@ WalletLog (錢包交易記錄)
 
 | 檔案 | 說明 |
 |------|------|
-| [SecurityConfig](../src/main/java/com/learning/api/security/SecurityConfig.java) | HTTP 安全設定：無狀態 Session、CORS、路由授權規則 |
+| [SecurityConfig](../src/main/java/com/learning/api/security/SecurityConfig.java) | HTTP 安全設定：無狀態 Session、CSRF 停用、路由授權規則、401/403 自訂回應 |
 | [JwtFilter](../src/main/java/com/learning/api/security/JwtFilter.java) | 每個請求解析 Bearer token，寫入 SecurityContext |
-| [JwtService](../src/main/java/com/learning/api/security/JwtService.java) | JWT 生成（含 userId/email/role claims）、解析、到期驗證 |
+| [JwtService](../src/main/java/com/learning/api/security/JwtService.java) | JWT 生成（含 email subject、userId/role claims）、解析、到期驗證 |
+| [CustomUserDetailsService](../src/main/java/com/learning/api/security/CustomUserDetailsService.java) | 實作 `UserDetailsService`，以 email 查詢 `MemberRepo` 並回傳 `SecurityUser` |
 | [SecurityUser](../src/main/java/com/learning/api/security/SecurityUser.java) | 實作 UserDetails，將 role int 對應到 ROLE_* 字串 |
 
 **授權規則摘要：**
@@ -265,7 +268,7 @@ Controller
     │
     ├──▶ Repository ──▶ MySQL (JPA)
     │
-    └──▶ JwtService (MemberService 登入時使用)
+    └──▶ JwtService (AuthService 登入時使用)
 
 Security (JwtFilter)
     │
