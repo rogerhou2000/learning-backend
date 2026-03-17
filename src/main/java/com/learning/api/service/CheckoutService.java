@@ -77,7 +77,7 @@ public class CheckoutService {
             b.setDate(slot.getDate());
             b.setHour(slot.getHour());
             b.setStatus(1); // 1: scheduled
-            b.setSlotLocked(false);
+            b.setSlotLocked(true);
             bookingRepo.save(b);
         }
 
