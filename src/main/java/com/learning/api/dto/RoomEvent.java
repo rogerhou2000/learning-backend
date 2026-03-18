@@ -10,6 +10,6 @@ import java.time.Instant;
 @Data
 public class RoomEvent {
     private String type;        // joined / left
-    private Integer role;       // 1=學生, 2=導師
+    private String role;        // student / tutor
     private Instant timestamp = Instant.now();
 }

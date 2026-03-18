@@ -21,7 +21,7 @@ public class ChatMessageService {
         return chatMessageRepository.findByBookingIdOrderByCreatedAtAsc(bookingId);
     }
 
-    public ChatMessage save(Long bookingId, Integer role, Integer messageTypeValue, String message, String mediaUrl) {
+    public ChatMessage save(Long bookingId, String role, Integer messageTypeValue, String message, String mediaUrl) {
         if (bookingId == null || bookingId <= 0) {
             throw new IllegalArgumentException("Booking ID 不能為空");
         }

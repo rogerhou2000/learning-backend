@@ -57,7 +57,7 @@ public class CourseService {
         }
 
         // 只有老師可以新增課程
-        if (tutor.getRole() != 2) {
+        if (tutor.getRole() == UserRole.TUTOR) {
             System.out.println("user isn't tutor");
             return false;
         }
@@ -144,7 +144,7 @@ public class CourseService {
 //        }
 //
 //        // 只有老師可以新增課程
-//        if (tutor.getRole() != 2) {
+//        if (tutor.getRole() != UserRole.TUTOR) {
 //            System.out.println("user isn't tutor");
 //            return false;
 //        }
