@@ -15,6 +15,11 @@ public class UserRoleConverter implements AttributeConverter<UserRole, String> {
     @Override
     public UserRole convertToEntityAttribute(String value) {
         if (value == null) return null;
-        return UserRole.valueOf(value.toUpperCase());
+        return switch (value) {
+            case "1" -> UserRole.STUDENT;
+            case "2" -> UserRole.TUTOR;
+            case "3" -> UserRole.ADMIN;
+            default  -> UserRole.valueOf(value.toUpperCase());
+        };
     }
 }
