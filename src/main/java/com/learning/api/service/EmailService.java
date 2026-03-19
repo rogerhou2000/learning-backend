@@ -85,7 +85,7 @@ public class EmailService {
 
         } catch (Exception e) {
 
-            log.error("Feedback Email 發送失敗 email={}", dto.getStudentEmail(), e.getMessage());
+            log.error("Feedback Email 發送失敗 email={}", dto.getStudentEmail(), e);
 
         }
 
