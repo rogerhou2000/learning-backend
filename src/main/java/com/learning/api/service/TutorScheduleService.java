@@ -2,8 +2,10 @@ package com.learning.api.service;
 
 import com.learning.api.dto.ScheduleDTO;
 import com.learning.api.entity.TutorSchedule;
+import com.learning.api.enums.UserRole;
 import com.learning.api.repo.TutorScheduleRepo;
 import com.learning.api.security.JwtService;
+import com.learning.api.security.SecurityUser;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,14 +96,17 @@ public class TutorScheduleService {
     }
 
 @Transactional
-public String batchToggleWithToken (ScheduleDTO.BatchToggleReq req, String token) {
-    String role = jwtService.role(token);
-    Long tokenUserId = jwtService.userId(token);
+public String batchToggle(ScheduleDTO.BatchToggleReq req, SecurityUser me) {
+    UserRole role = me.getUser().getRole();  
+    Long tutorId = me.getUser().getId();
+
+
 
     // 只允許老師操作自己的課表
-    if (!"TUTOR".equalsIgnoreCase(role)) {
+    if (role != UserRole.TUTOR) {
         return "不是老師無法操作";
     }
+
 
     for (ScheduleDTO.Slot slot : req.getSlots()) {
         Integer weekday = slot.getWeekday();
@@ -114,13 +119,13 @@ public String batchToggleWithToken (ScheduleDTO.BatchToggleReq req, String token
 
         Optional<TutorSchedule> existingSlotOpt =
             scheduleRepo.findByTutorIdAndWeekdayAndHour(
-                tokenUserId, weekday, hour
+                tutorId, weekday, hour
             );
 
         if (Boolean.TRUE.equals(slot.getIsAvailable())) {
             if (existingSlotOpt.isEmpty()) {
                 TutorSchedule newSlot = new TutorSchedule();
-                newSlot.setTutor(tutorRepo.getReferenceById(tokenUserId));
+                newSlot.setTutor(tutorRepo.getReferenceById(tutorId));
                 newSlot.setWeekday(weekday);
                 newSlot.setHour(hour);
                 newSlot.setIsAvailable(true);
