@@ -29,8 +29,8 @@ public class User {
 
     private LocalDate birthday;
 
-    @Column(nullable = false)
-    private UserRole role; //1:student/2:teacher/3admin
+    @Column(nullable = false, length = 255)
+    private UserRole role;
 
     @Column(nullable=false)
     private Integer wallet=0;

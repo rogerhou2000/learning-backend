@@ -4,17 +4,22 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
-public class UserRoleConverter implements AttributeConverter<UserRole, Integer> {
+public class UserRoleConverter implements AttributeConverter<UserRole, String> {
 
     @Override
-    public Integer convertToDatabaseColumn(UserRole role) {
+    public String convertToDatabaseColumn(UserRole role) {
         if (role == null) return null;
-        return role.getCode();
+        return role.name().toLowerCase();
     }
 
     @Override
-    public UserRole convertToEntityAttribute(Integer value) {
+    public UserRole convertToEntityAttribute(String value) {
         if (value == null) return null;
-        return UserRole.fromCode(value);
+        return switch (value) {
+            case "1" -> UserRole.STUDENT;
+            case "2" -> UserRole.TUTOR;
+            case "3" -> UserRole.ADMIN;
+            default  -> UserRole.valueOf(value.toUpperCase());
+        };
     }
 }
