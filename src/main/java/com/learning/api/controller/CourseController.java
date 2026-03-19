@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.learning.api.dto.CourseDTO;
 import com.learning.api.dto.CourseReq;
-import com.learning.api.entity.Course;
 import com.learning.api.service.CourseService;
 
 @RestController
@@ -28,13 +28,13 @@ public class CourseController {
 
     // GET /api/tutor/{tutorId}/courses
     @GetMapping
-    public ResponseEntity<List<Course>> getCourses(@PathVariable Long tutorId) {
+    public ResponseEntity<List<CourseDTO>> getCourses(@PathVariable Long tutorId) {
         return ResponseEntity.ok(courseService.getCoursesByTutorId(tutorId));
     }
 
     // GET /api/tutor/{tutorId}/courses/{courseId}
     @GetMapping("/{courseId}")
-    public ResponseEntity<Course> getCourse(
+    public ResponseEntity<CourseDTO> getCourse(
             @PathVariable Long tutorId,
             @PathVariable Long courseId) {
         return ResponseEntity.ok(courseService.getCourse(tutorId, courseId));
@@ -42,7 +42,7 @@ public class CourseController {
 
     // POST /api/tutor/{tutorId}/courses
     @PostMapping
-    public ResponseEntity<Course> createCourse(
+    public ResponseEntity<CourseDTO> createCourse(
             @PathVariable Long tutorId,
             @RequestBody CourseReq dto) {
         return ResponseEntity.ok(courseService.createCourse(tutorId, dto));
@@ -50,7 +50,7 @@ public class CourseController {
 
     // PUT /api/tutor/{tutorId}/courses/{courseId}
     @PutMapping("/{courseId}")
-    public ResponseEntity<Course> updateCourse(
+    public ResponseEntity<CourseDTO> updateCourse(
             @PathVariable Long tutorId,
             @PathVariable Long courseId,
             @RequestBody CourseReq dto) {

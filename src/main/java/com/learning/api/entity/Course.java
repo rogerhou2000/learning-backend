@@ -17,7 +17,7 @@ public class Course {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore // Course 實體與 Tutor 實體之間存在雙向關聯，避免無限迴圈
+/*     @JsonIgnore // Course 實體與 Tutor 實體之間存在雙向關聯，避免無限迴圈 */
     @JoinColumn(name = "tutor_id", nullable = false)
     private Tutor tutor;
 

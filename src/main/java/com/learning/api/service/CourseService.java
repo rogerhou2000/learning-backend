@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.learning.api.dto.CourseDTO;
 import com.learning.api.dto.CourseReq;
 import com.learning.api.entity.Course;
 import com.learning.api.entity.Tutor;
@@ -23,23 +24,26 @@ public class CourseService {
 
     // ── 查：所有課程 ──────────────────────────────────────────────────
 
-    public List<Course> getCoursesByTutorId(Long tutorId) {
+    public List<CourseDTO> getCoursesByTutorId(Long tutorId) {
         validateTutorExists(tutorId);
-        return courseRepo.findByTutorId(tutorId);
+        return courseRepo.findByTutorId(tutorId)
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     // ── 查：單一課程 ──────────────────────────────────────────────────
 
-    public Course getCourse(Long tutorId, Long courseId) {
+    public CourseDTO getCourse(Long tutorId, Long courseId) {
         Course course = findCourseOrThrow(courseId);
         validateCourseOwnership(course, tutorId);
-        return course;
+        return toDTO(course);
     }
 
     // ── 增 ────────────────────────────────────────────────────────────
 
     @Transactional
-    public Course createCourse(Long tutorId, CourseReq dto) {
+    public CourseDTO createCourse(Long tutorId, CourseReq dto) {
         Tutor tutor = tutorRepo.findById(tutorId)
                 .orElseThrow(() -> new RuntimeException("找不到老師 id=" + tutorId));
 
@@ -51,28 +55,23 @@ public class CourseService {
         course.setPrice(dto.getPrice());
         course.setIsActive(dto.getActive() != null ? dto.getActive() : true);
 
-        return courseRepo.save(course);
+        return toDTO(courseRepo.save(course));
     }
 
     // ── 修 ────────────────────────────────────────────────────────────
 
     @Transactional
-    public Course updateCourse(Long tutorId, Long courseId, CourseReq dto) {
+    public CourseDTO updateCourse(Long tutorId, Long courseId, CourseReq dto) {
         Course course = findCourseOrThrow(courseId);
         validateCourseOwnership(course, tutorId);
 
-        if (dto.getName() != null)
-            course.setName(dto.getName());
-        if (dto.getSubject() != null)
-            course.setSubject(dto.getSubject());
-        if (dto.getDescription() != null)
-            course.setDescription(dto.getDescription());
-        if (dto.getPrice() != null)
-            course.setPrice(dto.getPrice());
-        if (dto.getActive() != null)
-            course.setIsActive(dto.getActive());
+        if (dto.getName()        != null) course.setName(dto.getName());
+        if (dto.getSubject()     != null) course.setSubject(dto.getSubject());
+        if (dto.getDescription() != null) course.setDescription(dto.getDescription());
+        if (dto.getPrice()       != null) course.setPrice(dto.getPrice());
+        if (dto.getActive()      != null) course.setIsActive(dto.getActive());
 
-        return courseRepo.save(course);
+        return toDTO(courseRepo.save(course));
     }
 
     // ── 刪 ────────────────────────────────────────────────────────────
@@ -85,6 +84,18 @@ public class CourseService {
     }
 
     // ── 私有輔助方法 ──────────────────────────────────────────────────
+
+    /** Entity → DTO，只取純資料欄位，切斷所有 entity 關聯 */
+    private CourseDTO toDTO(Course course) {
+        return new CourseDTO(
+            course.getId(),
+            course.getName(),
+            course.getSubject(),
+            course.getDescription(),
+            course.getPrice(),
+            course.getIsActive()
+        );
+    }
 
     private void validateTutorExists(Long tutorId) {
         if (!tutorRepo.existsById(tutorId)) {
