@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.learning.api.dto.BookingResponseDTO;
 import com.learning.api.dto.CancelResponseDTO;
+import com.learning.api.dto.CourseDTO;
 import com.learning.api.dto.CourseDto;
 import com.learning.api.dto.PackageResponseDTO;
 import com.learning.api.dto.TodayCourseDto;
@@ -87,7 +88,7 @@ public class StudentCourseService {
 
         Course course = coursesRepo.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("課程不存在"));
-        if (course.getActive() != 1) {
+        if (!course.getIsActive()) {
             throw new RuntimeException("課程目前不可購買");
         }
 
@@ -164,9 +165,18 @@ public class StudentCourseService {
     // 取得特定課程包細節
     public PackageResponseDTO getPackageById(Long packageId) {
         Order order = ordersRepo.findById(packageId).orElseThrow();
+        List<Order> orders = ordersRepo.findByUserId(packageId);
+	 	
+	 	List<Long> courseIds = orders.stream().map(Order::getCourseId).distinct().toList();
+
+	    // 3. 一次性查出這些課程的 ID 和 Name (假設你有 CourseRepo)
+	    // 這裡使用 findAllById 效能很好
+	    Map<Long, String> courseNameMap = coursesRepo.findAllById(courseIds).stream()
+	            .collect(Collectors.toMap(Course::getId, Course::getName));
+        
         return new PackageResponseDTO(
             order.getId(),
-            order.getCourse().getName(),
+            courseNameMap.getOrDefault(order.getCourseId(), "未知課程"),
             order.getLessonCount(),
             order.getLessonUsed(),
             order.getLessonCount() - order.getLessonUsed(),
@@ -175,6 +185,14 @@ public class StudentCourseService {
     }
 
     public List<BookingResponseDTO> getMyCourses(Long userId) {
+    	List<Order> orders = ordersRepo.findByUserId(userId);
+	 	
+	 	List<Long> courseIds = orders.stream().map(Order::getCourseId).distinct().toList();
+
+	    // 3. 一次性查出這些課程的 ID 和 Name (假設你有 CourseRepo)
+	    Map<Long, String> courseNameMap = coursesRepo.findAllById(courseIds).stream()
+	            .collect(Collectors.toMap(Course::getId, Course::getName));
+	    
         return bookingsRepo.findByStudent_Id(userId).stream()
             .map(b -> new BookingResponseDTO(
                 b.getStudent().getName(),           // 學生姓名
@@ -212,9 +230,9 @@ public class StudentCourseService {
         )).toList();
     }
     
-    public List<CourseDto> getCoursesByDate(Long studentId, LocalDate date) {
+    public List<CourseDTO> getCoursesByDate(Long studentId, LocalDate date) {
         // 使用傳入的 date 取代 LocalDate.now()
-        List<Bookings> bookings = bookingsRepo.findByStudentIdAndDateOrderByHourAsc(studentId, date);
+        List<Booking> bookings = bookingsRepo.findByStudentIdAndDateOrderByHourAsc(studentId, date);
 
         return bookings.stream().map(b -> new CourseDto(
             b.getId(),
@@ -249,7 +267,7 @@ public class StudentCourseService {
             }
 
             // A. 符合規則：修改狀態為 3，並返還堂數
-            booking.setStatus((byte)3);
+            booking.setStatus(3);
             order.setLessonUsed(order.getLessonUsed() - 1);
             
             bookingsRepo.save(booking);
@@ -258,7 +276,7 @@ public class StudentCourseService {
             return new CancelResponseDTO(true, "取消成功，已返還堂數", order.getLessonCount() - order.getLessonUsed());
         } else {
             // B. 逾時取消：修改狀態為 3，不退堂
-            booking.setStatus((byte)3);
+            booking.setStatus(3);
             bookingsRepo.save(booking);
             
             return new CancelResponseDTO(false, "逾時取消 (12hr內)，不予返還堂數", order.getLessonCount() - order.getLessonUsed());
@@ -280,7 +298,7 @@ public class StudentCourseService {
         if (order.getStatus() != 1) {
             return "訂單狀態不符（可能已結案或已退費），無法辦理退課";
         }
-        List<Bookings> allBookings = bookingsRepo.findByOrder_Id(orderId);
+        List<Booking> allBookings = bookingsRepo.findByOrder_Id(orderId);
         LocalDateTime now = LocalDateTime.now();
 
         AtomicBoolean isin12hr = new AtomicBoolean(false);
@@ -293,11 +311,11 @@ public class StudentCourseService {
             // 判斷是否在 12 小時內
             if (now.plusHours(12).isAfter(lessonTime)) {
                 // A. 12 小時內：視同已上課，不退費
-                b.setStatus((byte) 2); 
+                b.setStatus(2); 
                 isin12hr.set(true);
             } else {
                 // B. 12 小時外：准予取消，會退費
-                b.setStatus((byte) 3);
+                b.setStatus(3);
                 
             }
             b.setSlotLocked(null); // 無論如何都釋放老師時段
@@ -335,7 +353,7 @@ public class StudentCourseService {
 
         // 7. 更新訂單狀態為「已退費/終止」
         // 假設 4 代表系統自動退課完成
-        order.setStatus((byte)4); 
+        order.setStatus(4); 
         ordersRepo.save(order);
         
         String msg = "整單退課成功！退還堂數：" + remainingLessons + "，退費金額：$" + refundAmount;

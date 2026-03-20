@@ -1,6 +1,8 @@
 package com.learning.api.repo;
 
 import com.learning.api.entity.Booking;
+
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 import java.util.List;
@@ -18,4 +20,8 @@ public interface BookingRepo extends JpaRepository<Booking, Long> {
     Optional<Booking> findByStudentIdAndDateAndHourAndSlotLockedTrue(Long studentId, LocalDate date, Integer hour);
 
     List<Booking> findByTutorId(Long tutorId);
+    List<Booking> findByStudent_Id(Long studentId);
+    List<Booking> findByStudentIdAndDateOrderByHourAsc(Long studentId, LocalDate date);
+    List<Booking> findByOrder_Id(Long orderId);
+    Optional<Booking> findByIdAndStudent_Id(Long id, Long studentId);
 }
