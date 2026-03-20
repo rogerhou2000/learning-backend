@@ -27,7 +27,7 @@ public class CheckoutService {
     @Autowired private EmailService emailService;
 
     // 🌟 新增：注入錢包流水帳的 Repo
-    @Autowired private WalletLogRepo walletLogRepo;
+    @Autowired private WalletLogsRepo walletLogRepo;
 
     // @Transactional
     // public String processPurchase(CheckoutReq req) {
