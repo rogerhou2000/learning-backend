@@ -26,6 +26,4 @@ public class CheckoutController {
             return ResponseEntity.badRequest().body(Map.of("msg", result));
         }
     }
-    
-
 }
