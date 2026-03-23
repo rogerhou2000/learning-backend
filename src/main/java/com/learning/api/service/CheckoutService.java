@@ -163,14 +163,14 @@ public class CheckoutService {
             }
 
             if (bookingRepo.findByStudentIdAndDateAndHourAndSlotLockedTrue(student.getId(), slot.getDate(), slot.getHour()).isPresent()) {
-                    throw new IllegalArgumentException("學生該時段已有其他課程，無法重複預約");//ok
+                throw new IllegalArgumentException("學生該時段已有其他課程，無法重複預約");//ok
             }
-            if (bookingRepo.findByTutorIdAndDateAndHourAndSlotLockedTrue(course.getTutor().getId(), slot.getDate(), slot.getHour()).isPresent()){ 
-                    throw new IllegalArgumentException("時段已被他人預約");//ok
+            if (bookingRepo.findByTutorIdAndDateAndHourAndSlotLockedTrue(course.getTutor().getId(), slot.getDate(), slot.getHour()).isPresent()){
+                throw new IllegalArgumentException("時段已被他人預約");//ok
             }
-        // 11. 驗證通過，加入待儲存清單
-        validatedSlots.add(slot);
-    }
+            // 11. 驗證通過，加入待儲存清單
+            validatedSlots.add(slot);
+        }
 
         // ─── 第二階段：全部驗證通過，開始執行扣款與建立紀錄 ───
 
