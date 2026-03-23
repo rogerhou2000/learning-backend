@@ -28,11 +28,8 @@ public class CheckoutController {
     //     } else {
     //         return ResponseEntity.badRequest().body(Map.of("msg", result));
     //     }
-<<<<<<< HEAD
     // } 
-=======
-    // }
->>>>>>> origin/feature/ApiTest
+
     @GetMapping("course/{courseId}/futurebookings")
     public ResponseEntity<?> getTeacherFutureBookings(@PathVariable Long courseId) {
 
@@ -43,28 +40,17 @@ public class CheckoutController {
 
     @GetMapping("me/futurebookings")
     public ResponseEntity<?> getStudentFutureBookings(@AuthenticationPrincipal SecurityUser me) {
-<<<<<<< HEAD
         Long studentId = me.getUser().getId(); 
-=======
-        Long studentId = me.getUser().getId();
->>>>>>> origin/feature/ApiTest
         return ResponseEntity.ok(
                 checkoutService.getStudentFutureBookings(studentId)
         );
     }
 
     @PostMapping("/purchase")
-<<<<<<< HEAD
-    public ResponseEntity<?> purchase(@RequestBody CheckoutReq req, @AuthenticationPrincipal SecurityUser me) {
-        Long studentId = me.getUser().getId();
-        UserRole role = me.getUser().getRole();
-        String result = checkoutService.processPurchase(req, studentId, role);
-=======
     public ResponseEntity<?> purchase(@RequestBody CheckoutReq req, @AuthenticationPrincipal SecurityUser me ) {
         Long studentId = me.getUser().getId();
         UserRole role = me.getUser().getRole();
         String result = checkoutService.processPurchase(req, studentId,role);
->>>>>>> origin/feature/ApiTest
 
         if ("success".equals(result)) {
             return ResponseEntity.ok(Map.of("msg", "購買並預約成功！"));

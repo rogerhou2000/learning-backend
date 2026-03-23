@@ -16,16 +16,6 @@ public class CheckoutReq {
     @Getter
     @Setter
     public static class Slot {
-<<<<<<< HEAD
-    private LocalDate date;
-    private Integer hour;
-
-    public Slot(LocalDate date, Integer hour) {
-        this.date = date;
-        this.hour = hour;
-    }
-}
-=======
         private LocalDate date;
         private Integer hour;
 
@@ -34,6 +24,5 @@ public class CheckoutReq {
             this.hour = hour;
         }
     }
->>>>>>> origin/feature/ApiTest
 
 }
