@@ -1,5 +1,7 @@
 package com.learning.api.entity;
 import com.learning.api.enums.UserRole;
+import com.learning.api.enums.UserRoleConverter;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +33,7 @@ public class User {
 
     private LocalDate birthday;
 
+    @Convert(converter = UserRoleConverter.class)
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private UserRole role;
