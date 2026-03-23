@@ -35,7 +35,7 @@ public class User {
 
     @Convert(converter = UserRoleConverter.class)
     @Column(nullable = false, length = 20)
-    @Enumerated(EnumType.STRING)
+   /*  @Enumerated(EnumType.STRING) */
     private UserRole role;
 
     @Column(nullable=false)
