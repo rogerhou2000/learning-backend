@@ -18,40 +18,49 @@ import java.util.UUID;
 @Service
 public class CheckoutService {
 
-    @Autowired private UserRepo userRepo;
-    @Autowired private CourseRepo courseRepo;
-    @Autowired private OrderRepository orderRepo;
-    @Autowired private BookingRepo bookingRepo;
-    @Autowired private TutorScheduleRepo scheduleRepo;
-    @Autowired private WalletLogRepo walletLogRepo;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private CourseRepo courseRepo;
+    @Autowired
+    private OrderRepository orderRepo;
+    @Autowired
+    private BookingRepo bookingRepo;
+    @Autowired
+    private TutorScheduleRepo scheduleRepo;
+    @Autowired
+    private EmailService emailService;
+
+    // 🌟 新增：注入錢包流水帳的 Repo
+    @Autowired
+    private WalletLogsRepo walletLogRepo;
 
     // 1. 注入 BookingService，讓建立預約的邏輯集中在那裡
-    @Autowired private BookingService bookingService;
+    @Autowired
+    private BookingService bookingService;
 
     @Transactional
-    public String processPurchase(CheckoutReq req) {
+    public String processPurchase(CheckoutReq req, Long studentId, UserRole role) {
+        if (role != UserRole.STUDENT) return "非學生權限";
 
-        // 2. 查詢學生與課程資料，找不到直接拋例外
-        User student = userRepo.findById(req.getStudentId())
-                .orElseThrow(() -> new IllegalArgumentException("找不到學生資料"));
+        User student = userRepo.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException("找不到用戶資料"));
         Course course = courseRepo.findById(req.getCourseId())
-                .orElseThrow(() -> new IllegalArgumentException("找不到課程資料"));//ok
-         if (req.getLessonCount() !=1 && req.getLessonCount() !=5 && req.getLessonCount() !=10 ) 
-            throw new IllegalArgumentException("無此數量方案");//ok
+                .orElseThrow(() -> new IllegalArgumentException("找不到課程資料"));
+
+        if (req.getLessonCount() != 1 && req.getLessonCount() != 5 && req.getLessonCount() != 10)
+            throw new IllegalArgumentException("無此數量方案");
 
         int totalSlots = req.getSelectedSlots().size();
+        if (totalSlots != req.getLessonCount())
+            throw new IllegalArgumentException("選擇時段數量與課程不相符");
+        if (totalSlots == 0)
+            throw new IllegalArgumentException("請至少選擇一個時段");
 
-        // 3. 至少要選一個時段
-        if (totalSlots == 0) throw new IllegalArgumentException("請至少選擇一個時段");
-
-        // 4. 根據購買堂數計算折扣後單堂價與總金額
         int unitDiscountPrice = calculateUnitDiscountPrice(course.getPrice(), totalSlots);
         int totalPrice = unitDiscountPrice * totalSlots;
 
-        // 5. 檢查錢包餘額是否足夠
-        if (student.getWallet() < totalPrice) {
-            return "餘額不足";//ok
-        }
+        if (student.getWallet() < totalPrice) return "餘額不足";
 
         // ─── 第一階段：全部驗證，任何一個時段有問題就整筆取消 ───
 
@@ -91,25 +100,25 @@ public class CheckoutService {
 
         // 13. 建立訂單紀錄
         Order order = new Order();
-        order.setUserId(student.getId());      // 綁定學生
-        order.setCourseId(course.getId());     // 綁定課程
-        order.setUnitPrice(course.getPrice()); // 原始單堂定價（快照，日後定價改變不影響）
-        order.setDiscountPrice(unitDiscountPrice); // 實際折扣後單堂價
-        order.setLessonCount(totalSlots);      // 購買堂數
-        order.setLessonUsed(0);               // 已使用堂數，初始為 0
-        order.setStatus(2);                   // 2 = 成交（deal）
-        Order savedOrder = orderRepo.save(order); // 儲存並取得含 ID 的訂單
+        order.setUserId(student.getId());           // 綁定學生
+        order.setCourseId(course.getId());          // 綁定課程
+        order.setUnitPrice(course.getPrice());      // 原始單堂定價（快照，日後定價改變不影響）
+        order.setDiscountPrice(unitDiscountPrice);  // 實際折扣後單堂價
+        order.setLessonCount(totalSlots);           // 購買堂數
+        order.setLessonUsed(0);                     // 已使用堂數，初始為 0
+        order.setStatus(2);                         // 2 = 成交（deal）
+        Order savedOrder = orderRepo.save(order);   // 儲存並取得含 ID 的訂單
 
         // 14. 建立每個時段的預約紀錄（呼叫 BookingService，職責分離）
         //     使用 try-catch 捕捉資料庫的唯一約束衝突，防止極端並發下的超賣
         for (CheckoutReq.Slot slot : validatedSlots) {
             try {
                 bookingService.createBooking(
-                        savedOrder.getId(),    // 綁定訂單
+                        savedOrder.getId(),          // 綁定訂單
                         course.getTutor().getId(),   // 老師 ID
-                        student.getId(),       // 學生 ID
-                        slot.getDate(),        // 預約日期
-                        slot.getHour()         // 預約小時
+                        student.getId(),             // 學生 ID
+                        slot.getDate(),              // 預約日期
+                        slot.getHour()               // 預約小時
                 );
             } catch (DataIntegrityViolationException e) {
                 // 15. 如果在極端情況下（兩人同時搶同一時段）資料庫唯一鍵衝突
@@ -122,9 +131,9 @@ public class CheckoutService {
         // 16. 寫入金流明細（WalletLog），記錄這筆扣款
         WalletLog walletLog = new WalletLog();
         walletLog.setUserId(student.getId());
-        walletLog.setTransactionType(2);           // 2 = 購課
-        walletLog.setAmount((long) -totalPrice);   // 負數代表扣款
-        walletLog.setRelatedType(1);               // 1 = 關聯到 order
+        walletLog.setTransactionType(2);            // 2 = 購課
+        walletLog.setAmount((long) -totalPrice);    // 負數代表扣款
+        walletLog.setRelatedType(1);                // 1 = 關聯到 order
         walletLog.setRelatedId(savedOrder.getId()); // 綁定訂單 ID
 
         // 17. 用 UUID 產生唯一的內部交易序號（merchant_trade_no 是 UNIQUE，不能重複）
@@ -132,17 +141,22 @@ public class CheckoutService {
                 "INT_" + UUID.randomUUID().toString().substring(0, 8) + "_" + savedOrder.getId());
         walletLogRepo.save(walletLog);
 
-         // 5. 寄送 Email 通知老師
+        // 18. 寄送 Email 通知老師
+        List<EmailBookingTimeDTO> times = new ArrayList<>();
+        for (CheckoutReq.Slot slot : validatedSlots) {
+            EmailBookingTimeDTO t = new EmailBookingTimeDTO();
+            t.setDate(slot.getDate());
+            t.setHour(slot.getHour());
+            times.add(t);
+        }
+
         EmailBookingDTO emailDTO = new EmailBookingDTO();
         emailDTO.setTutorEmail(course.getTutor().getUser().getEmail());
         emailDTO.setTutorName(course.getTutor().getUser().getName());
-
         emailDTO.setStudentName(student.getName());
         emailDTO.setCourseName(course.getName());
         emailDTO.setTimes(times);
-
         emailService.sendBookingEmail(emailDTO);
-
 
         return "success";
     }

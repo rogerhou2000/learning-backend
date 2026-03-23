@@ -87,7 +87,7 @@ public class StudentCourseService {
 
         Course course = coursesRepo.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("課程不存在"));
-        if (course.getActive() != 1) {
+        if (!course.getIsActive()) {
             throw new RuntimeException("課程目前不可購買");
         }
 
@@ -175,7 +175,7 @@ public class StudentCourseService {
     }
 
     public List<BookingResponseDTO> getMyCourses(Long userId) {
-        return bookingsRepo.findByStudent_Id(userId).stream()
+        return bookingsRepo.findByStudentId(userId).stream()
             .map(b -> new BookingResponseDTO(
                 b.getStudent().getName(),           // 學生姓名
                 b.getId(),                          // 預約 ID
@@ -187,7 +187,7 @@ public class StudentCourseService {
             )).toList();
     }
     public List<BookingResponseDTO> getBookingsByOrder(Long orderId) {
-        return bookingsRepo.findByOrder_Id(orderId).stream()
+        return bookingsRepo.findByOrderId(orderId).stream()
             .map(b -> new BookingResponseDTO(
                 b.getStudent().getName(),
                 b.getId(),
@@ -229,7 +229,7 @@ public class StudentCourseService {
     @Transactional
     public CancelResponseDTO cancelBooking(Long bookingId, Long userId) {
         // 1. 查找預約並驗證身分
-        Booking booking = bookingsRepo.findByIdAndStudent_Id(bookingId, userId)
+        Booking booking = bookingsRepo.findByIdAndStudentId(bookingId, userId)
                 .orElseThrow(() -> new RuntimeException("預約不存在或無權限"));
 
         // 2. 狀態檢查：僅 status=1 (排程中) 可申請取消
@@ -280,7 +280,7 @@ public class StudentCourseService {
         if (order.getStatus() != 1) {
             return "訂單狀態不符（可能已結案或已退費），無法辦理退課";
         }
-        List<Bookings> allBookings = bookingsRepo.findByOrder_Id(orderId);
+        List<Bookings> allBookings = bookingsRepo.findByOrderId(orderId);
         LocalDateTime now = LocalDateTime.now();
 
         AtomicBoolean isin12hr = new AtomicBoolean(false);
