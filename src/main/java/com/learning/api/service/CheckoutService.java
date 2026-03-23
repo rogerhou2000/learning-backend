@@ -1,7 +1,10 @@
 package com.learning.api.service;
 
 import com.learning.api.dto.CheckoutReq;
+import com.learning.api.dto.EmailBookingDTO;
+import com.learning.api.dto.EmailBookingTimeDTO;
 import com.learning.api.entity.*;
+import com.learning.api.enums.UserRole;
 import com.learning.api.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
