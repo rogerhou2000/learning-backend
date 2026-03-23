@@ -7,7 +7,7 @@ import com.learning.api.entity.*;
 import com.learning.api.enums.UserRole;
 import com.learning.api.repo.*;
 
-import lombok.RequiredArgsConstructor;
+/* import lombok.RequiredArgsConstructor; */
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -48,7 +48,7 @@ public class CheckoutService {
     public List<CheckoutReq.Slot> getStudentFutureBookings(Long studentId) {
 
         // 1️⃣ 先拿 tutorId（這裡才需要 Optional）
-        var student = userRepo.findById(studentId)
+        userRepo.findById(studentId)
                 .orElseThrow(() -> new IllegalArgumentException("查無此人"));
 
         // 2️⃣ 時間區間
