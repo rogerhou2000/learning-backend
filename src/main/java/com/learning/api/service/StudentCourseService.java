@@ -33,7 +33,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class StudentCourseService {
-    @Autowired
+    
     private final TutorRepo tutorRepo;
     @Autowired
     private WalletLogsRepo walletLogsRepo;
