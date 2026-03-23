@@ -1,10 +1,7 @@
 package com.learning.api.service;
 
 import com.learning.api.dto.CheckoutReq;
-import com.learning.api.dto.EmailBookingDTO;
-import com.learning.api.dto.EmailBookingTimeDTO;
 import com.learning.api.entity.*;
-import com.learning.api.enums.UserRole;
 import com.learning.api.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -15,7 +12,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-/* import java.util.UUID; */
+import java.util.UUID;
 
 @Service
 public class CheckoutService {
@@ -36,6 +33,7 @@ public class CheckoutService {
     // 🌟 新增：注入錢包流水帳的 Repo
     @Autowired
     private WalletLogsRepo walletLogRepo;
+
 
     // 1. 注入 BookingService，讓建立預約的邏輯集中在那裡
     @Autowired

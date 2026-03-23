@@ -74,7 +74,6 @@ INSERT INTO `tutors` (`id`, `apply_date`, `avatar`, `title`, `intro`, `certifica
     'https://drive.google.com/file/d/1-yT3YxcuMpdF4xML_hPUxT5W4F-7aNWp/view?usp=drive_link', 2,
     'https://drive.google.com/file/d/1UCHd6M_Z4-ZnJPp6RTry15iZiMyH3tMP/view?usp=drive_link', NULL,
     '004', '123456789012', 2),
->>>>>>> origin/feature/ApiTest
 
 (7, '2025-08-15', 'https://cdn.learning.com/avatars/tutor7.jpg',
     'GEPT 全民英檢補習名師',
@@ -108,7 +107,7 @@ INSERT INTO `courses` (`id`, `tutor_id`, `name`, `subject`, `description`, `pric
 -- 李美玲 (tutor_id=6)
 (1, 6, '低年級英語啟蒙班',    11, '針對小學一~二年級，以遊戲與故事帶領孩子認識英語字母、基礎單字與簡單句型。', 600, 1),
 (2, 6, '中年級英語讀寫強化班', 12, '聚焦中年級閱讀理解與寫作練習，每堂含課文精讀與小作文引導。', 650, 1),
-(3, 6, '體驗課：低年級英語',   11, '30 分鐘免費體驗，了解上課風格，適合第一次嘗試線上家教的家庭。', 0, 1),
+(3, 6, '體驗課：低年級英語',   11, '30 分鐘免費體驗，了解上課風格，適合第一次嘗試線上家教的家庭。', 200, 1),
 -- 吳建志 (tutor_id=7)
 (4, 7, 'GEPT 初級全攻略',     21, '系統性備考 GEPT 初級四大題型，含模擬試題精解與錯誤分析。', 800, 1),
 (5, 7, 'YLE Starters 衝刺班', 22, '專為 6~8 歲準備劍橋 YLE Starters 測驗，字彙累積 + 聽力訓練 + 口說練習。', 750, 1),
