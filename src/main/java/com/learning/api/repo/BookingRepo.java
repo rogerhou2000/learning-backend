@@ -38,11 +38,11 @@ public interface BookingRepo extends JpaRepository<Booking, Long> {
         ORDER BY b.date, b.hour
         """)
     List<CheckoutReq.Slot> findStudentFutureBookings(
-        @Param("studentId") Long studentId,
-        @Param("startDate") LocalDate startDate,
-        @Param("endDate") LocalDate endDate,
-        @Param("startHour") int startHour,
-        @Param("endHour") int endHour
+            @Param("studentId") Long studentId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("startHour") int startHour,
+            @Param("endHour") int endHour
     );
 
 
@@ -59,11 +59,11 @@ public interface BookingRepo extends JpaRepository<Booking, Long> {
         ORDER BY b.date, b.hour
         """)
     List<CheckoutReq.Slot> findTutorFutureBookings(
-        @Param("tutorId") Long tutorId,
-        @Param("startDate") LocalDate startDate,
-        @Param("endDate") LocalDate endDate,
-        @Param("startHour") int startHour,
-        @Param("endHour") int endHour
+            @Param("tutorId") Long tutorId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("startHour") int startHour,
+            @Param("endHour") int endHour
     );
 
 
@@ -72,4 +72,7 @@ public interface BookingRepo extends JpaRepository<Booking, Long> {
     List<Booking> findByStudentIdAndDateOrderByHourAsc(Long studentId, LocalDate date);
     List<Booking> findByOrderId(Long orderId);
     Optional<Booking> findByIdAndStudentId(Long id, Long studentId);
+ // 使用 Spring Data JPA 的命名規範自動生成 SQL
+    List<Booking> findByStudentIdAndDateGreaterThanEqualOrderByDateAscHourAsc(Long studentId, LocalDate date);
+
 }
