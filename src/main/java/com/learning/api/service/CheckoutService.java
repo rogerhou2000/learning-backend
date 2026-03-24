@@ -7,7 +7,7 @@ import com.learning.api.entity.*;
 import com.learning.api.enums.UserRole;
 import com.learning.api.repo.*;
 
-import lombok.RequiredArgsConstructor;
+/* import lombok.RequiredArgsConstructor; */
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+/* import java.util.UUID; */
 
 @Service
 public class CheckoutService {
