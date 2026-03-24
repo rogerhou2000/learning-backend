@@ -35,7 +35,6 @@ import jakarta.transaction.Transactional;
 @Service
 public class StudentCourseService {
     
-    private final TutorRepo tutorRepo;
     @Autowired
     private WalletLogsRepo walletLogsRepo;
     @Autowired
@@ -46,10 +45,6 @@ public class StudentCourseService {
     private BookingRepo bookingsRepo;
     @Autowired
     private CourseRepo coursesRepo;
-
-    StudentCourseService(TutorRepo tutorRepo) {
-        this.tutorRepo = tutorRepo;
-    } // needed for purchase logic
 
     public List<PackageResponseDTO> getMyPackages(Long userId) {
 
