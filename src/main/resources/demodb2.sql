@@ -136,6 +136,8 @@ CREATE TABLE `tutors` (
   `certificate_name_2` varchar(40) DEFAULT NULL,
   `video_url_1` varchar(500) DEFAULT NULL,
   `video_url_2` varchar(500) DEFAULT NULL,
+  'experience_1'varchar(200) DEFAULT NULL,
+  'experience_2'varchar(200) DEFAULT NULL,
   `bank_code` varchar(10) DEFAULT NULL,
   `bank_account` varchar(20) DEFAULT NULL,
   `status` tinyint(4) DEFAULT NULL COMMENT '//1 pending 2qualified 3停權'

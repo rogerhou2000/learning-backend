@@ -40,7 +40,7 @@ VALUES
 -- tutors (id 對應 users.id，status: 1=pending 2=qualified 3=停權)
 -- ============================================================
 INSERT INTO `tutors` (`id`, `apply_date`, `avatar`, `title`, `intro`, `certificate_1`, `certificate_name_1`,
-                      `certificate_2`, `certificate_name_2`, `video_url_1`, `video_url_2`, `bank_code`, `bank_account`,
+                      `certificate_2`, `certificate_name_2`, `video_url_1`, `video_url_2`, 'experience_1','experience_2',`bank_code`, `bank_account`,
                       `status`)
 VALUES (6, '2025-08-01', 'https://drive.google.com/file/d/1DXU3uHxuMw2IvxwI6i0Sp5FLRMziZeq_/view?usp=drive_link',
         '兒童英語教學專家',
@@ -49,6 +49,7 @@ VALUES (6, '2025-08-01', 'https://drive.google.com/file/d/1DXU3uHxuMw2IvxwI6i0Sp
         'TESOL 國際英語教師認證',
         'https://drive.google.com/file/d/1-yT3YxcuMpdF4xML_hPUxT5W4F-7aNWp/view?usp=drive_link', 'IELTS雅思認證',
         'https://drive.google.com/file/d/1UCHd6M_Z4-ZnJPp6RTry15iZiMyH3tMP/view?usp=drive_link', NULL,
+        '10年兒童英語教學經驗，曾任知名補習班主任教師', '美國加州短期教學進修，熟悉 TPR 及 CLT 教學法',
         '004', '123456789012', 2),
 
        (7, '2025-08-15', 'https://drive.google.com/file/d/1Vu5PPw9Q5QyT9oM7eHMoh4khCvIehELL/view?usp=drive_link',
@@ -58,6 +59,7 @@ VALUES (6, '2025-08-01', 'https://drive.google.com/file/d/1DXU3uHxuMw2IvxwI6i0Sp
         'https://drive.google.com/file/d/1-yT3YxcuMpdF4xML_hPUxT5W4F-7aNWp/view?usp=drive_link', 'PTE 英語考試認證',
         'https://drive.google.com/file/d/1SM4W0ZhD9VAcxJwBeTwq4TqzhjvaWooV/view?usp=drive_link',
         'https://drive.google.com/file/d/1UCHd6M_Z4-ZnJPp6RTry15iZiMyH3tMP/view?usp=drive_link ',
+        '8年英語檢定教學經驗，歷年學生 GEPT 通過率逾90%', '曾任劍橋英檢官方備考講師，熟悉各類英檢題型策略',
         '013', '987654321098', 2),
 
        (8, '2025-09-01', 'https://drive.google.com/file/d/1TtPgevM66DsIDygoF7Bd8NiksejSKJ6q/view?usp=drive_link',
@@ -66,6 +68,7 @@ VALUES (6, '2025-08-01', 'https://drive.google.com/file/d/1DXU3uHxuMw2IvxwI6i0Sp
         'https://drive.google.com/file/d/1-yT3YxcuMpdF4xML_hPUxT5W4F-7aNWp/view?usp=drive_link', '台灣大學外國語文學系',
         'https://drive.google.com/file/d/1fTK7nkWoPwCF1clzKlZ1Rdj_RJs-DuiC/view?usp=drive_link', 'GRE英語考試認證',
         'https://drive.google.com/file/d/1aNwVmwi9WtF2IEqyj9kWEAQxSdBT4am9/view?usp=drive_link', NULL,
+        '5年國中英文家教經驗，擅長文法系統化教學', '台大外文系畢業，曾於國中擔任實習教師一年',
         '822', '456789012345', 2),
 
        (9, '2025-10-10', 'https://drive.google.com/file/d/1PRcsio0qw1es3Eph11SZGKhiBRUVdWFy/view?usp=drive_link',
@@ -74,6 +77,7 @@ VALUES (6, '2025-08-01', 'https://drive.google.com/file/d/1DXU3uHxuMw2IvxwI6i0Sp
         'https://drive.google.com/file/d/1aCGYv6GldHtweRgnSR3nrTkH_bPZzMSy/view?usp=drive_link', 'CELTA 認證',
         'https://drive.google.com/file/d/1fTK7nkWoPwCF1clzKlZ1Rdj_RJs-DuiC/view?usp=drive_link', 'IELTS雅思認證',
         'https://drive.google.com/file/d/12alT0Rmmd0IXXfKwiCi9xowuBoSIhlqM/view?usp=drive_link', NULL,
+        '3年小學英語教學經驗，擅長遊戲化教學設計', '師範大學英語系畢業，具教育部國小教師證',
         '808', '321654987012', 1);
 
 -- ============================================================
@@ -85,11 +89,7 @@ VALUES
 -- 李美玲 (tutor_id=6)
 (1, 6, '低年級英語啟蒙班', 11, '針對小學一~二年級，以遊戲與故事帶領孩子認識英語字母、基礎單字與簡單句型。', 600, 1),
 (2, 6, '中年級英語讀寫強化班', 12, '聚焦中年級閱讀理解與寫作練習，每堂含課文精讀與小作文引導。', 650, 1),
-<<<<<<< HEAD
 (3, 6, '體驗課：低年級英語',   11, '30 分鐘免費體驗，了解上課風格，適合第一次嘗試線上家教的家庭。', 200, 1),
-=======
-(3, 6, '體驗課：低年級英語', 11, '30 分鐘免費體驗，了解上課風格，適合第一次嘗試線上家教的家庭。', 0, 1),
->>>>>>> origin/feature/ApiTest
 -- 吳建志 (tutor_id=7)
 (4, 7, 'GEPT 初級全攻略', 21, '系統性備考 GEPT 初級四大題型，含模擬試題精解與錯誤分析。', 800, 1),
 (5, 7, 'YLE Starters 衝刺班', 22, '專為 6~8 歲準備劍橋 YLE Starters 測驗，字彙累積 + 聽力訓練 + 口說練習。', 750, 1),

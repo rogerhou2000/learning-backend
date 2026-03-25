@@ -56,6 +56,8 @@ public class SecurityConfig {
 
                         // 其他都要登入
                         .anyRequest().authenticated()
+                        // 上傳檔案公開存取
+                        .requestMatchers("/uploads/**").permitAll()  
                 )
                 // 檢查 token
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
