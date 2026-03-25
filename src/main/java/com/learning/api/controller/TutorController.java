@@ -112,6 +112,66 @@ public class TutorController {
                 return ResponseEntity.ok(dto);
         }
 
+        // 2. 取得課表與課程列表
+        List<TutorSchedule> schedules = tutorService.findSchedulesByTutorId(id);
+        List<Course> courses = tutorService.findCoursesByTutorId(id);
+
+        // 3. 決定顯示哪堂課的評價
+        Course selectedCourse = null;
+        if (courseId != null) {
+            selectedCourse = tutorService.findCourseById(courseId);
+        } else if (!courses.isEmpty()) {
+            selectedCourse = courses.get(0);
+        }
+
+        List<Review> reviews = (selectedCourse != null)
+                ? tutorService.findReviewsByCourseId(selectedCourse.getId())
+                : new ArrayList<>();
+
+        // 4. 計算平均評分
+        double avgRating = reviews.stream()
+                .mapToInt(Review::getRating)
+                .average()
+                .orElse(0.0);
+
+        // 5. 組裝 DTO
+        TutorProfileDTO dto = new TutorProfileDTO();
+
+        dto.setName(tutor.getUser().getName());
+        dto.setHeadline(tutor.getTitle());
+        dto.setAvatar(tutor.getAvatar());
+        dto.setIntro(tutor.getIntro());
+
+        dto.setCertificate1(tutor.getCertificate1());
+        dto.setCertificateName1(tutor.getCertificateName1());
+        dto.setCertificate2(tutor.getCertificate2());
+        dto.setCertificateName2(tutor.getCertificateName2());
+
+        dto.setVideoUrl1(tutor.getVideoUrl1());
+        dto.setVideoUrl2(tutor.getVideoUrl2());
+
+        dto.setExperience1(tutor.getExperience1());
+        dto.setExperience2(tutor.getExperience2());
+        dto.setEducation(tutor.getEducation());
+
+        List<TutorScheduleDTO> scheduleDTOs = schedules.stream()
+                .map(s -> new TutorScheduleDTO(s.getWeekday(), s.getHour()))
+                .toList();
+        dto.setSchedules(scheduleDTOs);
+
+        List<ReviewDTO> reviewDTOs = reviews.stream()
+                .map(r -> new ReviewDTO(
+                        r.getStudent().getName(),
+                        r.getRating(),
+                        r.getComment(),
+                        r.getUpdatedAt()))
+                .toList();
+        dto.setReviews(reviewDTOs);
+
+        dto.setAverageRating(Double.parseDouble(String.format("%.1f", avgRating)));
+
+        return ResponseEntity.ok(dto);
+    }
 
     @GetMapping("/{id}/stats")
     public ResponseEntity<?> getTutorStats(@PathVariable Long id) {
