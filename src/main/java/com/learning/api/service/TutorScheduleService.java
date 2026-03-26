@@ -5,6 +5,8 @@ import com.learning.api.entity.Tutor;
 import com.learning.api.entity.TutorSchedule;
 import com.learning.api.repo.TutorRepo;
 import com.learning.api.repo.TutorScheduleRepo;
+import com.learning.api.security.SecurityUser;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +33,7 @@ public class TutorScheduleService {
 
         // 2. 查詢這個老師在「星期幾的幾點」是否已有紀錄
         Optional<TutorSchedule> existingSlotOpt = scheduleRepo.findByTutorIdAndWeekdayAndHour(
-                req.getTutorId(), req.getWeekday(), req.getHour()
-        );
+                req.getTutorId(), req.getWeekday(), req.getHour());
 
         if (Boolean.TRUE.equals(req.getIsAvailable())) {
             // 【目標：開放時段】
@@ -55,10 +56,41 @@ public class TutorScheduleService {
             // 【目標：關閉時段】
 
             // 5. 只有在「原本有紀錄」的情況下才刪除
-            //    使用 scheduleRepo::delete 是方法引用，等同於 slot -> scheduleRepo.delete(slot)
+            // 使用 scheduleRepo::delete 是方法引用，等同於 slot -> scheduleRepo.delete(slot)
             existingSlotOpt.ifPresent(scheduleRepo::delete);
         }
 
+        return "success";
+    }
+
+    @Transactional
+    public String batchToggle(ScheduleDTO.BatchToggleReq req, SecurityUser me) {
+        Long tutorId = me.getUser().getId();
+        Tutor tutor = tutorRepo.findById(tutorId)
+                .orElseThrow(() -> new IllegalArgumentException("找不到老師"));
+
+        for (ScheduleDTO.Slot slot : req.getSlots()) {
+            if (slot.getWeekday() < 1 || slot.getWeekday() > 7
+                    || slot.getHour() < 9 || slot.getHour() > 21) {
+                return "格式錯誤：時間範圍需在 9~21 點之間。";
+            }
+
+            Optional<TutorSchedule> existing = scheduleRepo.findByTutorIdAndWeekdayAndHour(
+                    tutorId, slot.getWeekday(), slot.getHour());
+
+            if (Boolean.TRUE.equals(slot.getIsAvailable())) {
+                if (existing.isEmpty()) {
+                    TutorSchedule newSlot = new TutorSchedule();
+                    newSlot.setTutor(tutor);
+                    newSlot.setWeekday(slot.getWeekday());
+                    newSlot.setHour(slot.getHour());
+                    newSlot.setIsAvailable(true);
+                    scheduleRepo.save(newSlot);
+                }
+            } else {
+                existing.ifPresent(scheduleRepo::delete);
+            }
+        }
         return "success";
     }
 

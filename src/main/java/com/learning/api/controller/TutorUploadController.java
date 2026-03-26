@@ -13,7 +13,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/tutor/me/upload")
 @CrossOrigin(origins = "http://localhost:5173")
-public class FileUploadController {
+public class TutorUploadController {
 
     //老師上傳檔案至個人資料
 

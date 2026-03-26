@@ -2,6 +2,8 @@ package com.learning.api.repo;
 
 import com.learning.api.dto.CheckoutReq;
 import com.learning.api.entity.Booking;
+
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -74,6 +76,14 @@ public interface BookingRepo extends JpaRepository<Booking, Long> {
      */
     @Query("SELECT b FROM Booking b WHERE b.slotLocked = true AND b.status = 1 AND (b.date < :today OR (b.date = :today AND b.hour < :hour))")
     List<Booking> findExpiredBookings(@Param("today") LocalDate today, @Param("hour") int hour);
+
+
+    List<Booking> findByStudentId(Long studentId);
+    List<Booking> findByStudentIdAndDateOrderByHourAsc(Long studentId, LocalDate date);
+    List<Booking> findByOrderId(Long orderId);
+    Optional<Booking> findByIdAndStudentId(Long id, Long studentId);
+ // 使用 Spring Data JPA 的命名規範自動生成 SQL
+    List<Booking> findByStudentIdAndDateGreaterThanEqualOrderByDateAscHourAsc(Long studentId, LocalDate date);
 
     /**
      * 批次更新過期 booking 為 status=2（已完成）
