@@ -45,7 +45,11 @@ public class MemberService {
         memberRepo.save(user);
     }
 
+<<<<<<< HEAD
+   /*  public User buildMember(RegisterReq registerReq, String email, String hashPassword){
+=======
     /* public User buildMember(RegisterReq registerReq, String email, String hashPassword){
+>>>>>>> feature/develop
         User newMember = new User();
         newMember.setName(registerReq.getName());
         newMember.setEmail(email);
@@ -69,8 +73,10 @@ public class MemberService {
         if (!BCrypt.checkpw(rawPassword, user.getPassword())) throw new IllegalArgumentException("密碼錯誤");
 
         // token JwtService
-        String token = jwtService.generateToken(user);
- */
+        String token = jwtService.generateToken(user); */
+
+        /* String token = jwtService.generateToken(user); */
+ 
 /*         UserResp userResp = new UserResp(
                 user.getId(),
                 user.getName(),
