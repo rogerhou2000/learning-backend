@@ -40,6 +40,7 @@ public class CheckoutService {
     @Autowired
     private WalletLogsRepo walletLogRepo;
 
+
     // 1. 注入 BookingService，讓建立預約的邏輯集中在那裡
     @Autowired
     private BookingService bookingService;
@@ -47,7 +48,8 @@ public class CheckoutService {
     public List<CheckoutReq.Slot> getStudentFutureBookings(Long studentId) {
 
         // 1️⃣ 先拿 tutorId（這裡才需要 Optional）
-        userRepo.findById(studentId).orElseThrow(() -> new IllegalArgumentException("查無此人"));
+        userRepo.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException("查無此人"));
 
         // 2️⃣ 時間區間
         LocalDateTime baseTime = LocalDateTime.now();
@@ -127,21 +129,21 @@ public class CheckoutService {
         for (CheckoutReq.Slot slot : req.getSelectedSlots()) {
 
             LocalDateTime lessonTime = LocalDateTime.of(
-                    slot.getDate(),
-                    LocalTime.of(slot.getHour(), 0)
+                slot.getDate(),
+                LocalTime.of(slot.getHour(), 0)
             );
 
             // ✅ 至少提前 24 小時
             if (lessonTime.isBefore(now.plusHours(24))) {
                 throw new IllegalArgumentException(
-                        "時段 " + slot.getDate() + " " + slot.getHour() + ":00 需提前24小時預約"
+                    "時段 " + slot.getDate() + " " + slot.getHour() + ":00 需提前24小時預約"
                 );
             }
 
             // ✅ 最多 4 週（28 天）
             if (lessonTime.isAfter(now.plusDays(28))) {
                 throw new IllegalArgumentException(
-                        "時段 " + slot.getDate() + " " + slot.getHour() + ":00 超過可預約範圍（4週內）"
+                    "時段 " + slot.getDate() + " " + slot.getHour() + ":00 超過可預約範圍（4週內）"
                 );
             }
 

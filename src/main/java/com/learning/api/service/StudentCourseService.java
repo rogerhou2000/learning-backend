@@ -27,13 +27,14 @@ import com.learning.api.entity.Order;
 import com.learning.api.entity.User;
 import com.learning.api.entity.WalletLog;
 import com.learning.api.repo.*;
+/* import jakarta.persistence.EntityManager; */
+/* import jakarta.persistence.LockModeType; */
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class StudentCourseService {
-    @Autowired
-    private final TutorRepo tutorRepo;
+    
     @Autowired
     private WalletLogsRepo walletLogsRepo;
     @Autowired
@@ -44,10 +45,6 @@ public class StudentCourseService {
     private BookingRepo bookingsRepo;
     @Autowired
     private CourseRepo coursesRepo;
-
-    StudentCourseService(TutorRepo tutorRepo) {
-        this.tutorRepo = tutorRepo;
-    } // needed for purchase logic
 
     public List<PackageResponseDTO> getMyPackages(Long userId) {
 
@@ -398,12 +395,11 @@ public class StudentCourseService {
         // 6. 批次儲存更新後的預約狀態
         bookingsRepo.saveAll(allBookings);
 
-        User user = usersRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("找不到使用者"));
+        User user = usersRepo.findById(order.getUserId()).orElseThrow();
 
+        /* User user = usersRepo.findById(userId); */
         user.setWallet((int) (user.getWallet() + refundAmount));
         usersRepo.save(user);
-
         // 5. 建立 WalletLogs 紀錄 (強制轉型 byte)
 
         WalletLog log = new WalletLog();

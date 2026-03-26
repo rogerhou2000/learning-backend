@@ -57,6 +57,8 @@ public class SecurityConfig {
                         // 管理者
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
+                        // 上傳檔案公開存取
+                        .requestMatchers("/uploads/**").permitAll()
                         // 其他都要登入
                         .anyRequest().authenticated()
                 )
