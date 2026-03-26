@@ -109,8 +109,7 @@ public class EmailService {
     }
 
 	private String buildBookingHtml(EmailBookingDTO dto) {
-		// TODO Auto-generated method stub
-
+		
 		 final String TEMPLATE = """
 				<div style="background:#f5f7fb;padding:30px;font-family:Arial,Helvetica,sans-serif;">
 

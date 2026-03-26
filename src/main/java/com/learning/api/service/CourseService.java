@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.learning.api.dto.CourseDTO;
+import com.learning.api.dto.CourseDto;
 import com.learning.api.dto.CourseReq;
 import com.learning.api.entity.Course;
 import com.learning.api.entity.Tutor;
@@ -33,7 +33,7 @@ public class CourseService {
 
     // ── 查：所有課程 ──────────────────────────────────────────────────
 
-    public List<CourseDTO> getCoursesByTutorId(Long tutorId) {
+    public List<CourseDto> getCoursesByTutorId(Long tutorId) {
         validateTutorExists(tutorId);
         return courseRepo.findByTutorId(tutorId)
                 .stream()
@@ -43,7 +43,7 @@ public class CourseService {
 
     // ── 查：單一課程 ──────────────────────────────────────────────────
 
-    public CourseDTO getCourse(Long tutorId, Long courseId) {
+    public CourseDto getCourse(Long tutorId, Long courseId) {
         Course course = findCourseOrThrow(courseId);
         validateCourseOwnership(course, tutorId);
         return toDTO(course);
@@ -52,7 +52,7 @@ public class CourseService {
     // ── 增 ────────────────────────────────────────────────────────────
 
     @Transactional
-    public CourseDTO createCourse(Long tutorId, CourseReq dto) {
+    public CourseDto createCourse(Long tutorId, CourseReq dto) {
         Tutor tutor = tutorRepo.findById(tutorId)
                 .orElseThrow(() -> new RuntimeException("找不到老師 id=" + tutorId));
 
@@ -70,7 +70,7 @@ public class CourseService {
     // ── 修 ────────────────────────────────────────────────────────────
 
     @Transactional
-    public CourseDTO updateCourse(Long tutorId, Long courseId, CourseReq dto) {
+    public CourseDto updateCourse(Long tutorId, Long courseId, CourseReq dto) {
         Course course = findCourseOrThrow(courseId);
         validateCourseOwnership(course, tutorId);
 
@@ -95,8 +95,8 @@ public class CourseService {
     // ── 私有輔助方法 ──────────────────────────────────────────────────
 
     /** Entity → DTO，只取純資料欄位，切斷所有 entity 關聯 */
-    private CourseDTO toDTO(Course course) {
-        return new CourseDTO(
+    private CourseDto toDTO(Course course) {
+        return new CourseDto(
             course.getId(),
             course.getName(),
             course.getSubject(),

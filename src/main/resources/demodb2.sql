@@ -82,7 +82,7 @@ CREATE TABLE `lesson_feedback` (
   `focus_score` int(11) NOT NULL COMMENT '1-5',
   `comprehension_score` int(11) NOT NULL COMMENT '1-5',
   `confidence_score` int(11) NOT NULL COMMENT '1-5',
-  `comment` varchar(1000) DEFAULT NULL
+  `comment` varchar(1000) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -128,6 +128,7 @@ CREATE TABLE `reviews` (
 CREATE TABLE `tutors` (
   `id` bigint(20) NOT NULL,
   `apply_date` date DEFAULT NULL,
+  `education` varchar(100) DEFAULT NULL,
   `avatar` varchar(500) DEFAULT NULL,
   `title` varchar(50) DEFAULT NULL,
   `intro` varchar(1000) DEFAULT NULL,
@@ -139,6 +140,8 @@ CREATE TABLE `tutors` (
   `experience_2` varchar(200) DEFAULT NULL,
   `video_url_1` varchar(500) DEFAULT NULL,
   `video_url_2` varchar(500) DEFAULT NULL,
+  'experience_1'varchar(200) DEFAULT NULL,
+  'experience_2'varchar(200) DEFAULT NULL,
   `bank_code` varchar(10) DEFAULT NULL,
   `bank_account` varchar(20) DEFAULT NULL,
   `status` tinyint(4) DEFAULT NULL COMMENT '//1 pending 2qualified 3停權'
