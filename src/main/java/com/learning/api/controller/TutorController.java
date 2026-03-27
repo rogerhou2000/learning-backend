@@ -112,7 +112,7 @@ public class TutorController {
                 return ResponseEntity.ok(dto);
         }
 
-        // 2. 取得課表與課程列表
+        /* // 2. 取得課表與課程列表
         List<TutorSchedule> schedules = tutorService.findSchedulesByTutorId(id);
         List<Course> courses = tutorService.findCoursesByTutorId(id);
 
@@ -171,7 +171,7 @@ public class TutorController {
         dto.setAverageRating(Double.parseDouble(String.format("%.1f", avgRating)));
 
         return ResponseEntity.ok(dto);
-    }
+    } */
 
     @GetMapping("/{id}/stats")
     public ResponseEntity<?> getTutorStats(@PathVariable Long id) {
