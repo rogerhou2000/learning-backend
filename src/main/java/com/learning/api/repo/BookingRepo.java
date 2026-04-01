@@ -72,7 +72,7 @@ public interface BookingRepo extends JpaRepository<Booking, Long> {
     /**
      * 找出已過期（時間已過）且 status=1 的 booking，用來撥款給老師
      */
-    @Query("SELECT b FROM Booking b WHERE b.slotLocked = true AND b.status = 1 AND (b.date < :today OR (b.date = :today AND b.hour < :hour))")
+    @Query("SELECT b FROM Booking b WHERE b.slotLocked = true AND b.status = 1 AND (b.date < :today OR (b.date = :today AND b.hour+1 < :hour))")
     List<Booking> findExpiredBookings(@Param("today") LocalDate today, @Param("hour") int hour);
 
 
