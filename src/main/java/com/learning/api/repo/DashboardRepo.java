@@ -23,8 +23,8 @@ public interface DashboardRepo extends JpaRepository<User, Long> {
     @Query(value = "SELECT COUNT(*) FROM tutors WHERE status = 2", nativeQuery = true)
     Long countQualifiedTutors();
 
-    /** 課程種類數（上架的科目代碼不重複） */
-    @Query(value = "SELECT COUNT(DISTINCT subject) FROM courses WHERE is_active = 1", nativeQuery = true)
+    /** 課程總數 */
+    @Query(value = "SELECT COUNT(*) FROM courses WHERE is_active = 1", nativeQuery = true)
     Long countCourseTypes();
 
     // ── 熱門課程排行（前 5，依訂購總堂數降冪） ────────────────────────
