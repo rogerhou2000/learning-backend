@@ -206,15 +206,8 @@ public class ChatMessageService {
             throw new IllegalArgumentException("Booking ID 不能為空");
         }
 
-        // ❌ 移除這段檢查（或改成只檢查訂單存在）
-        // orderRepo.findById(bookingId)
-        //     .orElseThrow(() -> new NoSuchElementException("Booking ID: " + bookingId + " 不存在"));
-
-        // ✅ 改成：檢查訂單存在即可，不管狀態
-        Order order = orderRepo.findById(bookingId)
+        orderRepo.findById(bookingId)
                 .orElseThrow(() -> new NoSuchElementException("Order ID: " + bookingId + " 不存在"));
-
-        // 不檢查 status，允許所有狀態的訂單發送訊息
 
         MessageType type = MessageType.fromValue(messageTypeValue != null ? messageTypeValue : MessageType.TEXT.getValue());
 
@@ -225,11 +218,9 @@ public class ChatMessageService {
 
         if (type.isMedia()) {
             chatMessage.setMediaUrl(mediaUrl);
-            if (message != null && !message.isBlank()) {
-                chatMessage.setMessage(message);
-            }
+            chatMessage.setMessage(message != null && !message.isBlank() ? message : "");
         } else {
-            chatMessage.setMessage(message);
+            chatMessage.setMessage(message != null ? message : "");
         }
 
         return chatMessageRepository.save(chatMessage);

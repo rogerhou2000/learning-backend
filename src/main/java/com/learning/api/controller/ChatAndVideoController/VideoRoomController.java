@@ -10,6 +10,7 @@ import com.learning.api.enums.MessageType;
 import com.learning.api.repo.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -25,6 +26,7 @@ import com.learning.api.security.SecurityUser;
 import com.learning.api.service.Chat.ChatMessageService;
 import com.learning.api.service.Chat.RoomService;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class VideoRoomController {
@@ -57,7 +59,8 @@ public class VideoRoomController {
                      SimpMessageHeaderAccessor accessor) {
         try {
             Integer roleNum = parseRole(request.getRole());
-            if (!validateBookingAndRole(bookingId, roleNum, accessor)) return;
+            // 聊天只驗證訂單存在 + role 合法，不檢查訂單狀態（已完成的訂單仍可聊天）
+            if (!validateForChat(bookingId, roleNum, accessor)) return;
 
             int typeValue = request.getMessageType() != null
                     ? request.getMessageType()
@@ -74,6 +77,7 @@ public class VideoRoomController {
 
             messagingTemplate.convertAndSend("/topic/room/" + bookingId + "/chat", saved);
         } catch (Exception e) {
+            log.error("STOMP chat error bookingId={}, role={}, msg={}", bookingId, request.getRole(), e.getMessage(), e);
             sendError(bookingId, accessor.getSessionId(), "CHAT_ERROR", e.getMessage());
         }
     }
@@ -107,6 +111,28 @@ public class VideoRoomController {
     }
 
     // ─── 驗證輔助 ─────────────────────────────────────────────
+
+    /**
+     * 聊天用驗證：只檢查訂單存在 + role 合法，不限制訂單狀態
+     */
+    private boolean validateForChat(Long bookingId, Integer role, SimpMessageHeaderAccessor accessor) {
+        String sessionId = accessor.getSessionId();
+
+        Optional<Order> orderOpt = orderRepo.findById(bookingId);
+        if (orderOpt.isEmpty()) {
+            sendError(bookingId, sessionId, "BOOKING_NOT_FOUND",
+                    "Booking " + bookingId + " 不存在");
+            return false;
+        }
+
+        if (role == null || (role != 1 && role != 2)) {
+            sendError(bookingId, sessionId, "INVALID_ROLE",
+                    "role 必須為 1（學生）或 2（導師），收到: " + role);
+            return false;
+        }
+
+        return true;
+    }
 
     /**
      * 驗證 bookingId 存在、未取消，以及 role 合法（1 或 2）
