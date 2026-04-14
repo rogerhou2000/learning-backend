@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.learning.api.config.MailConfig;
@@ -43,7 +44,7 @@ public class EmailService {
         message.setText(text);
         mailSender.send(message);
     }
-    
+    @Async
     public void sendBookingEmail(EmailBookingDTO dto) {
 
         try {
@@ -68,7 +69,7 @@ public class EmailService {
 
         }
     }
-    
+    @Async
     public void sendFeedbackEmail(FeedbackEmailDTO dto) {
 
         try {
